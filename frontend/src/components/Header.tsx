@@ -13,7 +13,7 @@ const Header = () => {
 
 	const logoutHandler = async () => {
 		try {
-			await logout().unwrap();
+			await logout(userDetails).unwrap();
 			dispatch(clearCredentials(userDetails));
 			navigate("/");
 		} catch (error) {
