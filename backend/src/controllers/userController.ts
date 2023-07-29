@@ -57,7 +57,7 @@ const getAllUsers = asyncHandler(async (req: any, res: any) => {
 const getUserById = asyncHandler(async (req, res) => {
 	const user = await UserService.getUserDetailsByID(parseInt(req.params.id));
 	if (user) res.send(user);
-	else res.sendStatus(404).send("No such user.");
+	else res.status(404).send("No such user.");
 });
 
 export const UserController = {

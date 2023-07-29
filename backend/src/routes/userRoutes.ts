@@ -4,7 +4,11 @@ import { AuthHandler } from "../middleware/authHandler";
 
 const router = express.Router();
 
-router.post("/", UserController.registerUser);
+router.post(
+	"/",
+	AuthHandler.requireResourcePermission(9, 3),
+	UserController.registerUser
+);
 router.post("/login", UserController.authUser);
 router.post("/logout", UserController.logoutUser);
 // router
