@@ -2,6 +2,17 @@ import asyncHandler from "express-async-handler";
 import { UserService } from "../services/userService";
 import generateJWT from "../utils/generateJWT";
 
+const getAllUsers = asyncHandler(async (req: any, res: any) => {
+	const users = await UserService.getAllUsers();
+	res.send(users.rows);
+});
+
+const getUserById = asyncHandler(async (req, res) => {
+	const user = await UserService.getUserDetailsByID(parseInt(req.params.id));
+	if (user) res.send(user);
+	else res.status(404).send("No such user.");
+});
+
 const registerUser = asyncHandler(async (req, res) => {
 	const { username, password, firstName, lastName } = req.body;
 	if (!username || !password || !firstName || !lastName)
@@ -33,40 +44,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 	res.status(200).send("User logged out.");
 });
 
-/*
-// Might implement these later.
-
-const getUserProfile = asyncHandler(async (req, res) => {
-	res.status(200).send("Get user profile.");
-});
-
-const updateUserProfile = asyncHandler(async (req, res) => {
-	res.status(200).send("Update user.");
-});
-
-const deleteUser = asyncHandler(async (req, res) => {
-	res.status(200).send("Delete user.");
-});
-*/
-
-const getAllUsers = asyncHandler(async (req: any, res: any) => {
-	const users = await UserService.getAllUsers();
-	res.send(users.rows);
-});
-
-const getUserById = asyncHandler(async (req, res) => {
-	const user = await UserService.getUserDetailsByID(parseInt(req.params.id));
-	if (user) res.send(user);
-	else res.status(404).send("No such user.");
-});
-
 export const UserController = {
+	getAllUsers,
+	getUserById,
 	registerUser,
 	authUser,
 	logoutUser,
-	// getUserProfile,
-	// updateUserProfile,
-	// deleteUser,
-	getAllUsers,
-	getUserById,
 };

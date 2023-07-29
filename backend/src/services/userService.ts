@@ -2,6 +2,27 @@ import { db } from "../config/db";
 import bcrypt from "bcryptjs";
 import { UserDetails } from "../types";
 
+const getAllUsers = async () => {
+	try {
+		const users = await db.query("SELECT * FROM users;");
+		return users;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getUserDetailsByID = async (id: number) => {
+	try {
+		if (await userExists(id, undefined)) {
+			const result = await db.query(userDetailsQueryById, [id]);
+			const user: UserDetails = extractUserDetails(result.rows);
+			return user;
+		} else throw new Error("No such user.");
+	} catch (error) {
+		throw error;
+	}
+};
+
 const createUser = async (
 	username: string,
 	password: string,
@@ -54,27 +75,6 @@ const updateUser = async (id: string) => {
 
 const deleteUser = async (id: string) => {
 	console.log(`Delete user ${id}.`);
-};
-
-const getAllUsers = async () => {
-	try {
-		const users = await db.query("SELECT * FROM users;");
-		return users;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const getUserDetailsByID = async (id: number) => {
-	try {
-		if (await userExists(id, undefined)) {
-			const result = await db.query(userDetailsQueryById, [id]);
-			const user: UserDetails = extractUserDetails(result.rows);
-			return user;
-		} else throw new Error("No such user.");
-	} catch (error) {
-		throw error;
-	}
 };
 
 const userExists = async (id?: number, username?: string) => {
