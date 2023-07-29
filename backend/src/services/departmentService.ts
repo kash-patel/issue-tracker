@@ -11,7 +11,7 @@ const getAllDepartments = async () => {
 };
 
 // Read specifc
-const getDepartment = async (id: string) => {
+const getDepartmentById = async (id: string) => {
 	try {
 		const result = await db.query("SELECT * FROM departments WHERE id = $1;", [
 			id,
@@ -58,7 +58,7 @@ const deleteDepartment = async (id: string) => {
 export const DepartmentService = {
 	createDepartment,
 	getAllDepartments,
-	getDepartment,
+	getDepartmentById,
 	updateDepartment,
 	deleteDepartment,
 };

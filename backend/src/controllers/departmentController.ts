@@ -8,17 +8,16 @@ const getAllDepartments = asyncHandler(async (req, res) => {
 });
 
 // Read specifc
-const getDepartment = asyncHandler(async (req, res) => {
+const getDepartmentById = asyncHandler(async (req, res) => {
 	if (!req.params.id)
 		throw new Error("Please specify the ID of the department to GET.");
-	const result = await DepartmentService.getDepartment(req.params.id);
+	const result = await DepartmentService.getDepartmentById(req.params.id);
 	res.send(result);
 });
 
 // Create
 const createDepartment = asyncHandler(async (req, res) => {
-	const name = req.body.name;
-	if (!name)
+	if (!req.body.name)
 		throw new Error(
 			"Please specify the name of the department you wish to create."
 		);
@@ -50,7 +49,7 @@ const deleteDepartment = asyncHandler(async (req, res) => {
 export const DepartmentController = {
 	createDepartment,
 	getAllDepartments,
-	getDepartment,
+	getDepartmentById,
 	updateDepartment,
 	deleteDepartment,
 };

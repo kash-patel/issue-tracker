@@ -1,5 +1,5 @@
 import express from "express";
-import { DepartmentController } from "../controllers/departmentController";
+import { RoleController } from "../controllers/roleController";
 import { AuthHandler } from "../middleware/authHandler";
 
 const router = express.Router();
@@ -7,27 +7,27 @@ const router = express.Router();
 router.get(
 	"/",
 	AuthHandler.requireResourcePermission(2, 2),
-	DepartmentController.getAllDepartments
+	RoleController.getAllRoles
 );
 router.get(
 	"/:id",
 	AuthHandler.requireResourcePermission(2, 2),
-	DepartmentController.getDepartmentById
+	RoleController.getRoleById
 );
 router.post(
 	"/",
 	AuthHandler.requireResourcePermission(2, 3),
-	DepartmentController.createDepartment
+	RoleController.createRole
 );
 router.patch(
 	"/:id",
 	AuthHandler.requireResourcePermission(2, 3),
-	DepartmentController.updateDepartment
+	RoleController.updateRole
 );
 router.delete(
 	"/:id",
 	AuthHandler.requireResourcePermission(2, 3),
-	DepartmentController.deleteDepartment
+	RoleController.deleteRole
 );
 
 export default router;

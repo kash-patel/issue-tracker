@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { notFoundError, errorHandler } from "./src/middleware/errorHandler";
 import userRouter from "./src/routes/userRoutes";
 import departmentRouter from "./src/routes/departmentRoutes";
+import roleRouter from "./src/routes/roleRoutes";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use(cookieParser());
 
 app.use("/api/users", userRouter);
 app.use("/api/departments", departmentRouter);
+app.use("/api/roles", roleRouter);
 
 app.use(notFoundError);
 app.use(errorHandler);
