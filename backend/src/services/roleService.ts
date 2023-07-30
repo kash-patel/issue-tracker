@@ -68,38 +68,43 @@ const updateRole = async (
 	id: string,
 	name?: string,
 	resourcePermissions?: {
-		[resourceId: number]: [permissionId: number];
+		[resourceId: number]: number;
 	}
 ) => {
 	try {
 		if (name)
 			await db.query("UPDATE roles SET name = $1 WHERE id = $2;", [name, id]);
+
 		if (resourcePermissions) {
 			const existingResourcePermissionsResult = await db.query(
-				"SELECT * FROM role_resource_permissions WHERE role_id = $1;",
+				"SELECT resource_id, permission_id FROM role_resource_permissions WHERE role_id = $1;",
 				[id]
 			);
 
-			const existingResourcePermissions =
-				existingResourcePermissionsResult.rows;
+			const existingResourcePermissions: { [resourceId: number]: number } = {};
+
+			existingResourcePermissionsResult.rows.forEach((row) => {
+				existingResourcePermissions[row.resource_id] = row.permission_id;
+			});
 
 			// Add to or update DB values
 			for (const [key, val] of Object.entries(resourcePermissions)) {
-				if (key in existingResourcePermissions)
+				if (Object.keys(existingResourcePermissions).includes(key)) {
 					await db.query(
 						"UPDATE role_resource_permissions SET permission_id = $1 WHERE role_id = $2 AND resource_id = $3;",
 						[val, id, key]
 					);
-				else
+				} else {
 					await db.query(
 						"INSERT INTO role_resource_permissions VALUES (DEFAULT, $1, $2, $3);",
 						[id, key, val]
 					);
+				}
 			}
 
 			// Delete DB values
 			for (const key of Object.keys(existingResourcePermissions)) {
-				if (key in resourcePermissions)
+				if (!(key in Object.keys(resourcePermissions)))
 					await db.query(
 						"DELETE FROM role_resource_permissions WHERE role_id = $1 AND resource_id = $2;",
 						[id, key]

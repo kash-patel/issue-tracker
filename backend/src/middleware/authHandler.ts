@@ -4,10 +4,9 @@ import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/userService";
 import { UserDetails } from "../types";
 
-const requireResourcePermission = (
-	resourceId: number,
-	minimumResourcePermission: number
-) => {
+const requireResourcePermission = (requiredPermissions: {
+	[resourceId: number]: number;
+}) => {
 	return asyncHandler(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const token = req.cookies.jwt;
@@ -19,25 +18,37 @@ const requireResourcePermission = (
 						process.env.JWT_SECRET!
 					) as UserDetails;
 
-					const userDetails: UserDetails | undefined = decoded;
+					const userId: number | undefined = decoded.userId;
 
-					if (!userDetails)
+					if (!userId)
 						throw new Error(
 							"Unauthorized: Please sign in to verify credentials."
 						);
 
-					let userHasRequiredResourcePermission: boolean = false;
+					const userResourcePermissions: { [resourceId: number]: number } =
+						await UserService.getUserResourcePermissions(userId);
 
-					Object.values(userDetails.roles).forEach((role) => {
+					let userHasRequiredResourcePermissions: boolean = true;
+
+					for (const resourceId of Object.keys(requireResourcePermission)) {
 						if (
-							resourceId.toString() in Object.keys(role.resourcePermissions) &&
-							role.resourcePermissions[resourceId].permissionId >=
-								minimumResourcePermission
+							!(resourceId in Object.keys(userResourcePermissions)) ||
+							userResourcePermissions[parseInt(resourceId)] <
+								userResourcePermissions[parseInt(resourceId)]
 						)
-							userHasRequiredResourcePermission = true;
-					});
+							userHasRequiredResourcePermissions = false;
+					}
 
-					if (!userHasRequiredResourcePermission) {
+					// Object.values(userDetails.roles).forEach((role) => {
+					// 	if (
+					// 		resourceId.toString() in Object.keys(role.resourcePermissions) &&
+					// 		role.resourcePermissions[resourceId].permissionId >=
+					// 			minimumResourcePermission
+					// 	)
+					// 		userHasRequiredResourcePermission = true;
+					// });
+
+					if (!userHasRequiredResourcePermissions) {
 						res.status(401);
 						throw new Error("Unauthorized: Insufficient resource permissions.");
 					}

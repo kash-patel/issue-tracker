@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post(
 	"/",
-	AuthHandler.requireResourcePermission(9, 3),
+	AuthHandler.requireResourcePermission({ 9: 3 }),
 	UserController.registerUser
 );
 router.post("/login", UserController.authUser);

@@ -6,27 +6,27 @@ const router = express.Router();
 
 router.get(
 	"/",
-	AuthHandler.requireResourcePermission(2, 2),
+	AuthHandler.requireResourcePermission({ 2: 2 }),
 	DepartmentController.getAllDepartments
 );
 router.get(
 	"/:id",
-	AuthHandler.requireResourcePermission(2, 2),
+	AuthHandler.requireResourcePermission({ 2: 2 }),
 	DepartmentController.getDepartmentById
 );
 router.post(
 	"/",
-	AuthHandler.requireResourcePermission(2, 3),
+	AuthHandler.requireResourcePermission({ 2: 3 }),
 	DepartmentController.createDepartment
 );
 router.patch(
 	"/:id",
-	AuthHandler.requireResourcePermission(2, 3),
+	AuthHandler.requireResourcePermission({ 2: 3 }),
 	DepartmentController.updateDepartment
 );
 router.delete(
 	"/:id",
-	AuthHandler.requireResourcePermission(2, 3),
+	AuthHandler.requireResourcePermission({ 2: 3 }),
 	DepartmentController.deleteDepartment
 );
 
