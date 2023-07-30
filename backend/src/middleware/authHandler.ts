@@ -39,15 +39,6 @@ const requireResourcePermission = (requiredPermissions: {
 							userHasRequiredResourcePermissions = false;
 					}
 
-					// Object.values(userDetails.roles).forEach((role) => {
-					// 	if (
-					// 		role.resourcePermissions.hasOwnProperty(resourceId) &&
-					// 		role.resourcePermissions[resourceId].permissionId >=
-					// 			minimumResourcePermission
-					// 	)
-					// 		userHasRequiredResourcePermission = true;
-					// });
-
 					if (!userHasRequiredResourcePermissions) {
 						res.status(401);
 						throw new Error("Unauthorized: Insufficient resource permissions.");
