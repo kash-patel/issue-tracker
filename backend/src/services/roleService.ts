@@ -32,7 +32,7 @@ const createRole = async (
 	name: string,
 	departmentId: number,
 	resourcePermissions?: {
-		[resourceId: number]: [permissionId: number];
+		[resourceId: number]: number;
 	}
 ) => {
 	try {
@@ -89,7 +89,7 @@ const updateRole = async (
 
 			// Add to or update DB values
 			for (const [key, val] of Object.entries(resourcePermissions)) {
-				if (Object.keys(existingResourcePermissions).includes(key)) {
+				if (existingResourcePermissions.hasOwnProperty(key)) {
 					await db.query(
 						"UPDATE role_resource_permissions SET permission_id = $1 WHERE role_id = $2 AND resource_id = $3;",
 						[val, id, key]
