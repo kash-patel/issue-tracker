@@ -30,18 +30,18 @@ const requireResourcePermission = (requiredPermissions: {
 
 					let userHasRequiredResourcePermissions: boolean = true;
 
-					for (const resourceId of Object.keys(requireResourcePermission)) {
+					for (const resourceId of Object.keys(requiredPermissions)) {
 						if (
-							!(resourceId in Object.keys(userResourcePermissions)) ||
+							!userResourcePermissions.hasOwnProperty(resourceId) ||
 							userResourcePermissions[parseInt(resourceId)] <
-								userResourcePermissions[parseInt(resourceId)]
+								requiredPermissions[parseInt(resourceId)]
 						)
 							userHasRequiredResourcePermissions = false;
 					}
 
 					// Object.values(userDetails.roles).forEach((role) => {
 					// 	if (
-					// 		resourceId.toString() in Object.keys(role.resourcePermissions) &&
+					// 		role.resourcePermissions.hasOwnProperty(resourceId) &&
 					// 		role.resourcePermissions[resourceId].permissionId >=
 					// 			minimumResourcePermission
 					// 	)

@@ -164,7 +164,7 @@ function extractHighestResourcePermissions(rows: Array<any>): {
 		} = {};
 
 		rows.forEach((row) => {
-			if (Object.keys(resourcePermissions).includes(row.resid)) {
+			if (resourcePermissions.hasOwnProperty(row.resid)) {
 				resourcePermissions[row.resid] = Math.max(
 					row.pid,
 					resourcePermissions[row.resid]
