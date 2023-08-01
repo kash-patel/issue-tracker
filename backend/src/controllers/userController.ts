@@ -8,7 +8,10 @@ const getAllUsers = asyncHandler(async (req: any, res: any) => {
 });
 
 const getUserById = asyncHandler(async (req, res) => {
+	if (!req.params.id) throw new Error("Please specify a user ID.");
+
 	const user = await UserService.getUserDetailsByID(parseInt(req.params.id));
+
 	if (user) res.send(user);
 	else res.status(404).send("No such user.");
 });

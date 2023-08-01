@@ -16,7 +16,9 @@ const getDepartmentById = async (id: string) => {
 		const result = await db.query("SELECT * FROM departments WHERE id = $1;", [
 			id,
 		]);
-		return result.rows;
+		if (result.rowCount > 0) return result.rows;
+
+		throw new Error("No such department.");
 	} catch (error) {
 		throw error;
 	}

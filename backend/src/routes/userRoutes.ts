@@ -16,7 +16,15 @@ router.post("/logout", UserController.logoutUser);
 // 	.get(AuthHandler.requireSignIn, UserController.getUserProfile)
 // 	.put(AuthHandler.requireSignIn, UserController.updateUserProfile);
 // router.delete("/:id", UserController.deleteUser);
-router.get("/", UserController.getAllUsers);
-router.get("/:id", UserController.getUserById);
+router.get(
+	"/",
+	AuthHandler.requireResourcePermission({ 9: 2 }),
+	UserController.getAllUsers
+);
+router.get(
+	"/:id",
+	AuthHandler.requireResourcePermission({ 9: 2 }),
+	UserController.getUserById
+);
 
 export default router;
