@@ -48,10 +48,33 @@ const registerUser = asyncHandler(async (req, res) => {
 	res.send(newUserDetails);
 });
 
+const getUserRoles = asyncHandler(async (req, res) => {
+	if (!req.params.id) throw new Error("Please supply a user ID.");
+	const userRoles = await UserService.getUserRoles(parseInt(req.params.id));
+	res.send(userRoles);
+});
+
+const updateUserRoles = asyncHandler(async (req, res) => {
+	const { newUserRoles }: { newUserRoles: Array<number> } = req.body;
+	if (!newUserRoles)
+		throw new Error(
+			`Please provided an array of updated role IDs for user ${req.params.id}.`
+		);
+
+	const updatedRoles = await UserService.updateUserRoles(
+		parseInt(req.params.id),
+		newUserRoles
+	);
+
+	res.send(updatedRoles);
+});
+
 export const UserController = {
 	getAllUsers,
 	getUserById,
 	registerUser,
 	authUser,
 	logoutUser,
+	getUserRoles,
+	updateUserRoles,
 };

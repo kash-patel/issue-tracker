@@ -50,6 +50,37 @@ const getUserRoles = async (id: number) => {
 	}
 };
 
+const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
+	try {
+		const exitingRolesResult = await db.query(
+			"SELECT role_id FROM user_roles WHERE user_id = $1;",
+			[id]
+		);
+		const existingRoles: Array<number> = exitingRolesResult.rows.map(
+			(row) => row.role_id
+		);
+
+		newUserRoles.forEach(async (newRoleId) => {
+			if (!existingRoles.includes(newRoleId))
+				await db.query("INSERT INTO user_roles VALUES (DEFAULT, $1, $2);", [
+					id,
+					newRoleId,
+				]);
+		});
+		existingRoles.forEach(async (existingRoleId) => {
+			if (!newUserRoles.includes(existingRoleId))
+				await db.query(
+					"DELETE FROM user_roles WHERE user_id = $1 AND role_id = $2;",
+					[id, existingRoleId]
+				);
+		});
+
+		return newUserRoles;
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getUserResourcePermissions = async (id: number) => {
 	try {
 		const result = await db.query(userResourcePermissionsQueryById, [id]);
@@ -97,10 +128,6 @@ const createUser = async (
 	} catch (error) {
 		throw error;
 	}
-};
-
-const updateUser = async (id: string) => {
-	console.log(`Update user ${id}.`);
 };
 
 const deleteUser = async (id: string) => {
@@ -196,10 +223,10 @@ export const UserService = {
 	authenticateUser,
 	getUserDetailsByID,
 	getUserRoles,
+	updateUserRoles,
 	getUserResourcePermissions,
 	userExists,
 	createUser,
-	updateUser,
 	deleteUser,
 };
 

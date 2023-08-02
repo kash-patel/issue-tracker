@@ -4,9 +4,15 @@ import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/userService";
 import { UserDetails } from "../types";
 
-const requireResourcePermission = (requiredPermissions: {
-	[resourceId: number]: number;
-}) => {
+const requirePermissions = (
+	requiredPermissions: {
+		[resourceId: number]: number;
+	},
+	ownPermissions: {
+		read: boolean;
+		edit: boolean;
+	} = { read: false, edit: false }
+) => {
 	return asyncHandler(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const token = req.cookies.jwt;
@@ -85,6 +91,6 @@ const requireSignIn = asyncHandler(async (req: Request, res, next) => {
 });
 
 export const AuthHandler = {
-	requireResourcePermission,
+	requirePermissions,
 	requireSignIn,
 };
