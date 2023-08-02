@@ -17,7 +17,7 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-	const { username, password, firstName, lastName } = req.body;
+	const { username, password, firstName, lastName, roleIds } = req.body;
 	if (!username || !password || !firstName || !lastName)
 		throw new Error(
 			"Please include a username, password, first name, and last name."
@@ -26,7 +26,8 @@ const registerUser = asyncHandler(async (req, res) => {
 		username,
 		password,
 		firstName,
-		lastName
+		lastName,
+		roleIds
 	);
 	generateJWT(res, newUserDetails);
 	res.send(newUserDetails);
