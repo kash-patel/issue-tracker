@@ -45,9 +45,9 @@ const createRole = async (
 
 		if (!resourcePermissions) return `Created role ${name}.`;
 
-		const roleIdresult = await db.query("SELECT max(id) FROM roles;");
-		const roleId: number = roleIdresult.rows[0].max
-			? roleIdresult.rows[0].max
+		const roleIdResult = await db.query("SELECT max(id) FROM roles;");
+		const roleId: number = roleIdResult.rows[0].max
+			? roleIdResult.rows[0].max
 			: 1;
 
 		for (const [key, val] of Object.entries(resourcePermissions)) {

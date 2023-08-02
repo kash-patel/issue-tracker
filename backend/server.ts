@@ -7,6 +7,7 @@ import userRouter from "./src/routes/userRoutes";
 import departmentRouter from "./src/routes/departmentRoutes";
 import roleRouter from "./src/routes/roleRoutes";
 import locationRouter from "./src/routes/locationRoutes";
+import systemRouter from "./src/routes/systemRoutes";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app.use("/api/users", userRouter);
 app.use("/api/departments", departmentRouter);
 app.use("/api/roles", roleRouter);
 app.use("/api/locations", locationRouter);
+app.use("/api/systems", systemRouter);
 
 app.use(notFoundError);
 app.use(errorHandler);
