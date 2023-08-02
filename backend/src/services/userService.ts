@@ -23,6 +23,42 @@ const getUserDetailsByID = async (id: number) => {
 	}
 };
 
+const authenticateUser = async (username: string, password: string) => {
+	try {
+		const result = await db.query("SELECT * FROM users WHERE username = $1", [
+			username,
+		]);
+
+		if (
+			result.rowCount > 0 &&
+			(await bcrypt.compare(password, result.rows[0].password_hashed))
+		) {
+			const result = await db.query(userDetailsQueryByUsername, [username]);
+			return extractUserDetails(result.rows);
+		} else throw new Error("Invalid credentials.");
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getUserRoles = async (id: number) => {
+	try {
+		const result = await db.query(userRolesQueryById, [id]);
+		return extractUserRoles(result.rows);
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getUserResourcePermissions = async (id: number) => {
+	try {
+		const result = await db.query(userResourcePermissionsQueryById, [id]);
+		return extractHighestResourcePermissions(result.rows);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const createUser = async (
 	username: string,
 	password: string,
@@ -58,42 +94,6 @@ const createUser = async (
 		});
 
 		return userDetails;
-	} catch (error) {
-		throw error;
-	}
-};
-
-const authenticateUser = async (username: string, password: string) => {
-	try {
-		const result = await db.query("SELECT * FROM users WHERE username = $1", [
-			username,
-		]);
-
-		if (
-			result.rowCount > 0 &&
-			(await bcrypt.compare(password, result.rows[0].password_hashed))
-		) {
-			const result = await db.query(userDetailsQueryByUsername, [username]);
-			return extractUserDetails(result.rows);
-		} else throw new Error("Invalid credentials.");
-	} catch (error) {
-		throw error;
-	}
-};
-
-const getUserRoles = async (id: number) => {
-	try {
-		const result = await db.query(userRolesQueryById, [id]);
-		return extractUserRoles(result.rows);
-	} catch (error) {
-		throw error;
-	}
-};
-
-const getUserResourcePermissions = async (id: number) => {
-	try {
-		const result = await db.query(userResourcePermissionsQueryById, [id]);
-		return extractHighestResourcePermissions(result.rows);
 	} catch (error) {
 		throw error;
 	}
