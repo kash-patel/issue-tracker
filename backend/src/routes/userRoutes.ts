@@ -21,6 +21,11 @@ router.post(
 );
 router.post("/login", UserController.authUser);
 router.post("/logout", UserController.logoutUser);
+router.delete(
+	"/:id",
+	AuthHandler.requirePermissions({ 9: 3 }),
+	UserController.deleteUser
+);
 
 // User roles
 router.get(

@@ -130,8 +130,13 @@ const createUser = async (
 	}
 };
 
-const deleteUser = async (id: string) => {
-	console.log(`Delete user ${id}.`);
+const deleteUser = async (id: number) => {
+	try {
+		const result = await db.query("DELETE FROM users WHERE id = $1;", [id]);
+		return `Deleted user ${id}.`;
+	} catch (error) {
+		throw error;
+	}
 };
 
 const userExists = async (id?: number, username?: string) => {

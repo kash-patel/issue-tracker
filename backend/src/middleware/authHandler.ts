@@ -8,10 +8,7 @@ const requirePermissions = (
 	requiredPermissions: {
 		[resourceId: number]: number;
 	},
-	ownPermissions: {
-		read: boolean;
-		edit: boolean;
-	} = { read: false, edit: false }
+	canSendToOwn: boolean = false
 ) => {
 	return asyncHandler(
 		async (req: Request, res: Response, next: NextFunction) => {

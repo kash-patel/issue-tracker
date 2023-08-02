@@ -69,12 +69,24 @@ const updateUserRoles = asyncHandler(async (req, res) => {
 	res.send(updatedRoles);
 });
 
+const deleteUser = asyncHandler(async (req, res) => {
+	if (!req.params.id)
+		throw new Error("Please supply the ID of the user to delete.");
+
+	const deleteUserResult = await UserService.deleteUser(
+		parseInt(req.params.id)
+	);
+
+	res.send(deleteUserResult);
+});
+
 export const UserController = {
 	getAllUsers,
 	getUserById,
 	registerUser,
 	authUser,
 	logoutUser,
+	deleteUser,
 	getUserRoles,
 	updateUserRoles,
 };
