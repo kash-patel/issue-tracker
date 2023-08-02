@@ -34,10 +34,8 @@ const createSystem = asyncHandler(async (req, res) => {
 
 // Update
 const updateSystem = asyncHandler(async (req, res) => {
-	if (!req.body.name && !req.body.resourcePermissions)
-		throw new Error(
-			`Please specify the new name or resource permissions of system ${req.params.id}.`
-		);
+	if (!req.body.name)
+		throw new Error(`Please specify the new name of system ${req.params.id}.`);
 	const result = await SystemService.updateSystem(req.params.id, req.body.name);
 	res.send(result);
 });

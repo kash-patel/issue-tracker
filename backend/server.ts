@@ -10,6 +10,7 @@ import locationRouter from "./src/routes/locationRoutes";
 import systemRouter from "./src/routes/systemRoutes";
 import vehicleRouter from "./src/routes/vehicleRoutes";
 import speciesRouter from "./src/routes/speciesRoutes";
+import animalRouter from "./src/routes/animalRoutes";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use("/api/locations", locationRouter);
 app.use("/api/systems", systemRouter);
 app.use("/api/vehicles", vehicleRouter);
 app.use("/api/species", speciesRouter);
+app.use("/api/animals", animalRouter);
 
 app.use(notFoundError);
 app.use(errorHandler);
