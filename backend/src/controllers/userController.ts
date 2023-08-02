@@ -16,6 +16,21 @@ const getUserById = asyncHandler(async (req, res) => {
 	else res.status(404).send("No such user.");
 });
 
+const authUser = asyncHandler(async (req, res) => {
+	const { username, password } = req.body;
+	const userDetails = await UserService.authenticateUser(username, password);
+	generateJWT(res, userDetails);
+	res.status(201).send(userDetails);
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+	res.cookie("jwt", null, {
+		httpOnly: true,
+		expires: new Date(0),
+	});
+	res.status(200).send("User logged out.");
+});
+
 const registerUser = asyncHandler(async (req, res) => {
 	const { username, password, firstName, lastName, roleIds } = req.body;
 	if (!username || !password || !firstName || !lastName)
@@ -31,21 +46,6 @@ const registerUser = asyncHandler(async (req, res) => {
 	);
 	generateJWT(res, newUserDetails);
 	res.send(newUserDetails);
-});
-
-const authUser = asyncHandler(async (req, res) => {
-	const { username, password } = req.body;
-	const userDetails = await UserService.authenticateUser(username, password);
-	generateJWT(res, userDetails);
-	res.status(201).send(userDetails);
-});
-
-const logoutUser = asyncHandler(async (req, res) => {
-	res.cookie("jwt", null, {
-		httpOnly: true,
-		expires: new Date(0),
-	});
-	res.status(200).send("User logged out.");
 });
 
 export const UserController = {
