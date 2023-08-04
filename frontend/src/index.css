@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+main {
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: 1em;
+}
+
 /*
 :root {
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

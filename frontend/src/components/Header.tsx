@@ -23,7 +23,7 @@ const Header = () => {
 
 	return (
 		<header>
-			<Link to={"/"}>PARKman</Link> |{" "}
+			<Link to={"/"}>ParkMan</Link> |{" "}
 			{userDetails ? (
 				<Link onClick={logoutHandler} to={"/"}>
 					Sign Out
