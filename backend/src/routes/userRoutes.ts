@@ -30,7 +30,7 @@ router.delete(
 // User roles
 router.get(
 	"/:id/roles",
-	AuthHandler.requirePermissions({ 9: 2 }),
+	AuthHandler.requirePermissions({ 9: 2 }, true),
 	UserController.getUserRoles
 );
 router.patch(
@@ -38,6 +38,20 @@ router.patch(
 	AuthHandler.requirePermissions({ 9: 3 }),
 	UserController.updateUserRoles
 );
+
+// Get user departments
+router.get(
+	"/:id/departments",
+	AuthHandler.requirePermissions({ 2: 2 }, true),
+	UserController.getUserDepartments
+);
+// Get user resources
+router.get(
+	"/:id/resources",
+	AuthHandler.requirePermissions({ 5: 2 }, true),
+	UserController.getUserResources
+);
+
 // router
 // 	.route("/profile")
 // 	.get(AuthHandler.requireSignIn, UserController.getUserProfile)

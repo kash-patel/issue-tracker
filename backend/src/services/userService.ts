@@ -43,6 +43,8 @@ const authenticateUser = async (username: string, password: string) => {
 
 const getUserRoles = async (id: number) => {
 	try {
+		const doesUserExist: boolean = await userExists(id);
+		if (!doesUserExist) return {};
 		const result = await db.query(userRolesQueryById, [id]);
 		return extractUserRoles(result.rows);
 	} catch (error) {
@@ -52,11 +54,11 @@ const getUserRoles = async (id: number) => {
 
 const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
 	try {
-		const exitingRolesResult = await db.query(
+		const existingRolesResult = await db.query(
 			"SELECT role_id FROM user_roles WHERE user_id = $1;",
 			[id]
 		);
-		const existingRoles: Array<number> = exitingRolesResult.rows.map(
+		const existingRoles: Array<number> = existingRolesResult.rows.map(
 			(row) => row.role_id
 		);
 
@@ -75,7 +77,37 @@ const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
 				);
 		});
 
-		return newUserRoles;
+		const updatedUserRoles: {
+			[roleId: number]: {
+				roleName: string;
+				departmentId: number;
+				departmentName: string;
+			};
+		} = await getUserRoles(id);
+
+		return updatedUserRoles;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getUserDepartments = async (id: number) => {
+	try {
+		const doesUserExist: boolean = await userExists(id);
+		if (!doesUserExist) return {};
+		const result = await db.query(userDepartmentsQueryById, [id]);
+		return extractUserDepartments(result.rows);
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getUserResources = async (id: number) => {
+	try {
+		const doesUserExist: boolean = await userExists(id);
+		if (!doesUserExist) return {};
+		const result = await db.query(userResourcesQueryById, [id]);
+		return extractUniqueUserResources(result.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -83,6 +115,8 @@ const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
 
 const getUserResourcePermissions = async (id: number) => {
 	try {
+		const doesUserExist: boolean = await userExists(id);
+		if (!doesUserExist) return {};
 		const result = await db.query(userResourcePermissionsQueryById, [id]);
 		return extractHighestResourcePermissions(result.rows);
 	} catch (error) {
@@ -158,6 +192,8 @@ function extractUserDetails(rows: Array<any>): UserDetails {
 			lastName: "",
 		};
 
+		if (rows.length <= 0) return userDetails;
+
 		userDetails.userId = rows[0].uid;
 		userDetails.username = rows[0].uname;
 		userDetails.firstName = rows[0].fname;
@@ -177,6 +213,8 @@ function extractUserRoles(rows: Array<any>): {
 	};
 } {
 	try {
+		if (rows.length <= 0) return {};
+
 		const userRoles: {
 			[roleId: number]: {
 				roleName: string;
@@ -186,14 +224,80 @@ function extractUserRoles(rows: Array<any>): {
 		} = {};
 
 		rows.forEach((row) => {
-			userRoles[row.rid] = {
-				roleName: row.rname,
-				departmentId: row.did,
-				departmentName: row.dname,
-			};
+			if (row.resid)
+				userRoles[row.rid] = {
+					roleName: row.rname,
+					departmentId: row.did,
+					departmentName: row.dname,
+				};
 		});
 
 		return userRoles;
+	} catch (error) {
+		throw error;
+	}
+}
+
+function extractUserDepartments(rows: Array<any>): {
+	[departmentId: number]: string;
+} {
+	try {
+		if (rows.length <= 0) return {};
+
+		const userDepartments: {
+			[departmentId: number]: string;
+		} = {};
+
+		rows.forEach((row) => {
+			if (row.resid) userDepartments[row.did] = row.dname;
+		});
+
+		return userDepartments;
+	} catch (error) {
+		throw error;
+	}
+}
+
+function extractUniqueUserResources(rows: Array<any>): {
+	[resourceId: number]: {
+		resourceName: string;
+		permissionId: number;
+		permissionName: string;
+	};
+} {
+	try {
+		if (rows.length <= 0) return {};
+
+		const uniqueUserResources: {
+			[resourceId: number]: {
+				resourceName: string;
+				permissionId: number;
+				permissionName: string;
+			};
+		} = {};
+
+		const highestResourcePermissions: {
+			[resourceId: number]: number;
+		} = extractHighestResourcePermissions(rows);
+
+		rows.forEach((row) => {
+			if (row.resid && !uniqueUserResources.hasOwnProperty(row.resid)) {
+				uniqueUserResources[row.resid] = {
+					resourceName: row.resname,
+					permissionId: highestResourcePermissions[row.resid],
+					permissionName:
+						highestResourcePermissions[row.resid] === 1
+							? "None"
+							: highestResourcePermissions[row.resid] === 2
+							? "Read"
+							: highestResourcePermissions[row.resid] === 3
+							? "Write"
+							: "Unknown",
+				};
+			}
+		});
+
+		return uniqueUserResources;
 	} catch (error) {
 		throw error;
 	}
@@ -203,6 +307,8 @@ function extractHighestResourcePermissions(rows: Array<any>): {
 	[resourceId: number]: number;
 } {
 	try {
+		if (rows.length <= 0) return {};
+
 		const resourcePermissions: {
 			[resourceId: number]: number;
 		} = {};
@@ -213,10 +319,11 @@ function extractHighestResourcePermissions(rows: Array<any>): {
 					row.pid,
 					resourcePermissions[row.resid]
 				);
-			} else {
+			} else if (row.resid) {
 				resourcePermissions[row.resid] = row.pid;
 			}
 		});
+
 		return resourcePermissions;
 	} catch (error) {
 		throw error;
@@ -229,6 +336,8 @@ export const UserService = {
 	getUserDetailsByID,
 	getUserRoles,
 	updateUserRoles,
+	getUserDepartments,
+	getUserResources,
 	getUserResourcePermissions,
 	userExists,
 	createUser,
@@ -240,23 +349,9 @@ SELECT
 users.id uid,
 users.username uname,
 users.first_name fname,
-users.last_name lname,
-roles.id rid,
-roles.name rname,
-departments.id did,
-departments.name dname,
-resources.id resid,
-resources.name resname,
-permissions.id pid,
-permissions.name pname
+users.last_name lname
 FROM
 users
-LEFT JOIN user_roles ON users.id = user_roles.user_id
-LEFT JOIN roles ON user_roles.role_id = roles.id
-LEFT JOIN departments ON roles.department_id = departments.id
-LEFT JOIN role_resource_permissions ON roles.id = role_resource_permissions.role_id
-LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
-LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
 WHERE
 users.id = $1;
 `;
@@ -266,23 +361,9 @@ SELECT
 users.id uid,
 users.username uname,
 users.first_name fname,
-users.last_name lname,
-roles.id rid,
-roles.name rname,
-departments.id did,
-departments.name dname,
-resources.id resid,
-resources.name resname,
-permissions.id pid,
-permissions.name pname
+users.last_name lname
 FROM
 users
-LEFT JOIN user_roles ON users.id = user_roles.user_id
-LEFT JOIN roles ON user_roles.role_id = roles.id
-LEFT JOIN departments ON roles.department_id = departments.id
-LEFT JOIN role_resource_permissions ON roles.id = role_resource_permissions.role_id
-LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
-LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
 WHERE
 users.username = $1;
 `;
@@ -298,6 +379,35 @@ users
 LEFT JOIN user_roles ON users.id = user_roles.user_id
 LEFT JOIN roles ON user_roles.role_id = roles.id
 LEFT JOIN departments ON roles.department_id = departments.id
+WHERE
+users.id = $1;
+`;
+
+const userDepartmentsQueryById = `
+SELECT
+departments.id did,
+departments.name dname
+FROM
+users
+LEFT JOIN user_roles ON users.id = user_roles.user_id
+LEFT JOIN roles ON user_roles.role_id = roles.id
+LEFT JOIN departments ON roles.department_id = departments.id
+WHERE
+users.id = $1;
+`;
+
+const userResourcesQueryById = `
+SELECT
+resources.id resid,
+resources.name resname,
+permissions.id pid,
+permissions.name pname
+FROM
+users
+LEFT JOIN user_roles ON users.id = user_roles.user_id
+LEFT JOIN role_resource_permissions ON user_roles.role_id = role_resource_permissions.role_id
+LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
+LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
 WHERE
 users.id = $1;
 `;

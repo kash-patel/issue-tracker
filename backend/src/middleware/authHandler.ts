@@ -42,7 +42,10 @@ const requirePermissions = (
 							userHasRequiredResourcePermissions = false;
 					}
 
-					if (!userHasRequiredResourcePermissions) {
+					const sendingToOwn: boolean =
+						canSendToOwn && userId === parseInt(req.params.id);
+
+					if (!userHasRequiredResourcePermissions && !sendingToOwn) {
 						res.status(401);
 						throw new Error("Unauthorized: Insufficient resource permissions.");
 					}

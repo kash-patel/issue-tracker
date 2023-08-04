@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { UserService } from "../services/userService";
 import generateJWT from "../utils/generateJWT";
+import { type } from "os";
 
 const getAllUsers = asyncHandler(async (req: any, res: any) => {
 	const users = await UserService.getAllUsers();
@@ -49,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const getUserRoles = asyncHandler(async (req, res) => {
-	if (!req.params.id) throw new Error("Please supply a user ID.");
+	if (!req.params.id) throw new Error("Please supply a valid user ID.");
 	const userRoles = await UserService.getUserRoles(parseInt(req.params.id));
 	res.send(userRoles);
 });
@@ -67,6 +68,22 @@ const updateUserRoles = asyncHandler(async (req, res) => {
 	);
 
 	res.send(updatedRoles);
+});
+
+const getUserDepartments = asyncHandler(async (req, res) => {
+	if (!req.params.id) throw new Error("Please supply a valid user ID.");
+	const userDepartments = await UserService.getUserDepartments(
+		parseInt(req.params.id)
+	);
+	res.send(userDepartments);
+});
+
+const getUserResources = asyncHandler(async (req, res) => {
+	if (!req.params.id) throw new Error("Please supply a valid user ID.");
+	const userResources = await UserService.getUserResources(
+		parseInt(req.params.id)
+	);
+	res.send(userResources);
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
@@ -89,4 +106,6 @@ export const UserController = {
 	deleteUser,
 	getUserRoles,
 	updateUserRoles,
+	getUserDepartments,
+	getUserResources,
 };
