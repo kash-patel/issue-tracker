@@ -1,5 +1,5 @@
 const BASE_URL =
-	process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+	import.meta.env.ENV === "development" ? "http://localhost:3000" : "";
 const DEPARTMENTS_URL = "/api/departments";
 const ROLES_URL = "/api/roles";
 const USERS_URL = "/api/users";

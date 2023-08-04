@@ -16,7 +16,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 				method: "POST",
 			}),
 		}),
+		list: builder.query({
+			query: () => ({
+				url: Constants.USERS_URL,
+				method: "GET",
+			}),
+		}),
 	}),
 });
 
-export const { useLoginMutation, useLogoutMutation } = usersApiSlice;
+export const { useLoginMutation, useLogoutMutation, useListQuery } =
+	usersApiSlice;
