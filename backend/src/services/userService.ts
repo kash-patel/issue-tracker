@@ -78,10 +78,9 @@ const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
 		});
 
 		const updatedUserRoles: {
-			[roleId: number]: {
-				roleName: string;
-				departmentId: number;
+			[departmentId: number]: {
 				departmentName: string;
+				[roleId: number]: string;
 			};
 		} = await getUserRoles(id);
 
@@ -206,30 +205,26 @@ function extractUserDetails(rows: Array<any>): UserDetails {
 }
 
 function extractUserRoles(rows: Array<any>): {
-	[roleId: number]: {
-		roleName: string;
-		departmentId: number;
+	[departmentId: number]: {
 		departmentName: string;
+		[roleId: number]: string;
 	};
 } {
 	try {
 		if (rows.length <= 0) return {};
 
 		const userRoles: {
-			[roleId: number]: {
-				roleName: string;
-				departmentId: number;
+			[departmentId: number]: {
 				departmentName: string;
+				[roleId: number]: string;
 			};
 		} = {};
 
 		rows.forEach((row) => {
 			if (row.rid) {
-				userRoles[row.rid] = {
-					roleName: row.rname,
-					departmentId: row.did,
-					departmentName: row.dname,
-				};
+				if (!userRoles[row.did])
+					userRoles[row.did] = { departmentName: row.dname };
+				userRoles[row.did][row.rid] = row.rname;
 			}
 		});
 
@@ -250,7 +245,7 @@ function extractUserDepartments(rows: Array<any>): {
 		} = {};
 
 		rows.forEach((row) => {
-			if (row.rid) userDepartments[row.did] = row.dname;
+			if (row.did) userDepartments[row.did] = row.dname;
 		});
 
 		return userDepartments;
@@ -371,10 +366,10 @@ users.username = $1;
 
 const userRolesQueryById = `
 SELECT
-roles.id rid,
-roles.name rname,
 departments.id did,
-departments.name dname
+departments.name dname,
+roles.id rid,
+roles.name rname
 FROM
 users
 LEFT JOIN user_roles ON users.id = user_roles.user_id
