@@ -1,10 +1,16 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { setCredentials, clearCredentials } from "../slices/authSlice";
-import { useLoginMutation, useLogoutMutation } from "../slices/usersApiSlice";
+import {
+	useLoginMutation,
+	useLogoutMutation,
+	useGetUserRolesQuery,
+} from "../slices/usersApiSlice";
 import { UserProfiles } from "../data/userProfiles";
 import BlockingLoader from "../components/BlockingLoader";
 import { FaAngleRight } from "react-icons/fa6";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 function getRolesString(roles: string[]): string {
 	let rolesString: string = "";
@@ -27,12 +33,15 @@ const HomeScreen = () => {
 	const [login, { isLoading, error }] = useLoginMutation();
 	const [logout] = useLogoutMutation();
 	const { userDetails } = useSelector((state: any) => state.auth);
+	const userRolesQuery = useGetUserRolesQuery(
+		userDetails ? userDetails.userId : skipToken
+	);
 
 	async function handleProfileClick(username: string, password: string) {
 		try {
 			const res = await login({ username, password }).unwrap();
 			dispatch(setCredentials({ ...res }));
-			navigate("/dashboard");
+			navigate("/");
 		} catch (err) {
 			console.log(err);
 		}
@@ -50,12 +59,62 @@ const HomeScreen = () => {
 
 	return (
 		<section>
+			{isLoading && <BlockingLoader />}
+			{/* {isLoading && (
+				<p className="px-4 py-2 mb-2 bg-amber-50 border border-amber-500 text-amber-600 rounded-md">
+					Loading...
+				</p>
+			)} */}
+			{error && (
+				<p className="px-4 py-2 mb-2 bg-red-50 border border-red-500 text-red-600 rounded-md">
+					{"status" in error
+						? "error" in error
+							? error?.error
+							: error?.data?.message
+						: error.message}
+				</p>
+			)}
 			{userDetails ? (
 				<>
 					<h1 className="my-8 text-center">
 						Welcome, {userDetails.firstName}.
 					</h1>
-					<div className="max-w-sm mx-auto flex flex-col justify-around items-center gap-4">
+					{userRolesQuery.isLoading ? (
+						<BlockingLoader />
+					) : userRolesQuery.error ? (
+						<p>{error?.data?.message || error?.message}</p>
+					) : (
+						<div className="my-8">
+							<h2>Your Roles</h2>
+							{Object.keys(userRolesQuery.data).length <= 0 ? (
+								<p className="my-1">
+									You currently have no roles at Jurassic Park.
+								</p>
+							) : (
+								<ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+									{Object.keys(userRolesQuery.data).map((departmentId) => (
+										<li key={departmentId}>
+											<p className="uppercase font-bold tracking-wide text-sm bg-zinc-200 px-2 py-1 mt-2 rounded-md inline-block">
+												{userRolesQuery.data[departmentId].departmentName}
+											</p>
+											<ul>
+												{Object.keys(
+													userRolesQuery.data[departmentId].roles
+												).map((roleId) => (
+													<li key={roleId}>
+														<p className="uppercase tracking-wide text-sm ml-4 my-1">
+															{userRolesQuery.data[departmentId].roles[roleId]}
+														</p>
+													</li>
+												))}
+											</ul>
+										</li>
+									))}
+								</ul>
+							)}
+						</div>
+					)}
+					<div className="max-w-sm mx-auto my-8 flex flex-col justify-around items-center gap-4">
 						<Link to={"/dashboard"}>
 							<p className="uppercase font-bold tracking-widest bg-zinc-800 hover:bg-emerald-600 transition-all p-4 rounded-md text-white flex flex-row justify-between items-center">
 								Go to your dashboard
@@ -131,21 +190,6 @@ const HomeScreen = () => {
 						)}
 					</ul>
 				</>
-			)}
-			{isLoading && <BlockingLoader />}
-			{/* {isLoading && (
-				<p className="px-4 py-2 mb-2 bg-amber-50 border border-amber-500 text-amber-600 rounded-md">
-					Loading...
-				</p>
-			)} */}
-			{error && (
-				<p className="px-4 py-2 mb-2 bg-red-50 border border-red-500 text-red-600 rounded-md">
-					{"status" in error
-						? "error" in error
-							? error?.error
-							: error?.data?.message
-						: error.message}
-				</p>
 			)}
 		</section>
 	);

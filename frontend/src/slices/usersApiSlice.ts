@@ -16,6 +16,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 				method: "POST",
 			}),
 		}),
+		getUserRoles: builder.query({
+			query: (id) => ({
+				url: `${Constants.USERS_URL}/${id}/roles`,
+				method: "GET",
+			}),
+		}),
 		getAccessibleResources: builder.query({
 			query: (id) => ({
 				url: `${Constants.USERS_URL}/${id}/resources`,
@@ -28,5 +34,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 export const {
 	useLoginMutation,
 	useLogoutMutation,
+	useGetUserRolesQuery,
 	useGetAccessibleResourcesQuery,
 } = usersApiSlice;
