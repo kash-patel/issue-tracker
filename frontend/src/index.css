@@ -2,12 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-main {
-	max-width: 64rem;
-	margin: 0 auto;
-	padding: 1em;
+@layer base {
+	main {
+		max-width: 64rem;
+		margin: 0 auto;
+		padding: 1em;
+	}
+
+	h1 {
+		@apply text-2xl font-bold;
+	}
+
+	h2 {
+		@apply text-xl font-bold;
+	}
 }
 
+@layer utilities {
+	.small-caps {
+		font-variant-caps: small-caps;
+	}
+
+	.all-small-caps {
+		font-variant-caps: all-small-caps;
+	}
+}
 /*
 :root {
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
