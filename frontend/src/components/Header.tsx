@@ -23,24 +23,28 @@ const Header = () => {
 	};
 
 	return (
-		<header className="p-4 flex flex-row justify-between items-center">
+		<header className="fixed top-0 left-0 right-0 bottom-auto bg-white border-b border-solid border-gray-300 z-10 p-4 flex flex-row justify-between items-center">
 			<Link to={"/"}>
-				<p className="font-black text-lg tracking-widest">PARKMAN</p>
+				<p className="uppercase font-black text-lg tracking-widest hover:text-emerald-600 transition-all">
+					ParkMan
+				</p>
 			</Link>
 			<div>
 				<Link to={"/about"}>
-					<p className="font-bold text-sm tracking-widest inline mx-2">ABOUT</p>
+					<p className="uppercase font-bold text-sm tracking-widest inline hover:text-emerald-600 transition-all mx-2">
+						About
+					</p>
 				</Link>
 				{userDetails ? (
-					<Link onClick={logoutHandler} to={"#"}>
-						<p className="font-bold text-sm tracking-widest inline mx-2">
-							SIGN OUT
+					<Link onClick={logoutHandler} to={"/"}>
+						<p className="uppercase font-bold text-sm tracking-widest inline hover:text-emerald-600 transition-all mx-2">
+							Sign Out
 						</p>
 					</Link>
 				) : (
 					<Link to={"/login"}>
-						<p className="font-bold text-sm tracking-widest inline mx-2">
-							SIGN IN
+						<p className="uppercase font-bold text-sm tracking-widest inline hover:text-emerald-600 transition-all mx-2">
+							Sign In
 						</p>
 					</Link>
 				)}

@@ -4,6 +4,7 @@ import { setCredentials, clearCredentials } from "../slices/authSlice";
 import { useLoginMutation, useLogoutMutation } from "../slices/usersApiSlice";
 import { UserProfiles } from "../data/userProfiles";
 import BlockingLoader from "../components/BlockingLoader";
+import { FaAngleRight } from "react-icons/fa6";
 
 function getRolesString(roles: string[]): string {
 	let rolesString: string = "";
@@ -51,23 +52,34 @@ const HomeScreen = () => {
 		<section>
 			{userDetails ? (
 				<>
-					<h1>Welcome, {userDetails.firstName}.</h1>
-					<Link to={"/dashboard"}>
-						<p>Dashboard &rarr;</p>
-					</Link>
-					<Link onClick={handleSignOutClick} to={"/"}>
-						<p>Sign Out &rarr;</p>
-					</Link>
+					<h1 className="my-8 text-center">
+						Welcome, {userDetails.firstName}.
+					</h1>
+					<div className="max-w-sm mx-auto flex flex-col justify-around items-center gap-4">
+						<Link to={"/dashboard"}>
+							<p className="uppercase font-bold tracking-widest bg-zinc-800 hover:bg-emerald-600 transition-all p-4 rounded-md text-white flex flex-row justify-between items-center">
+								Go to your dashboard
+							</p>
+						</Link>
+						<p className="font-bold tracking-widest text-sm text-zinc-500">
+							OR
+						</p>
+						<Link onClick={handleSignOutClick} to={"/"}>
+							<p className="uppercase font-bold tracking-widest hover:text-emerald-600 transition-all flex flex-row justify-between items-center">
+								Sign out
+							</p>
+						</Link>
+					</div>
 				</>
 			) : (
 				<>
-					<h1 className="mb-4">Welcome to ParkMan</h1>
+					<h1 className="my-8">Welcome to ParkMan</h1>
 					<p className="mb-4">
 						Select one of the user profiles below to get started, or test out
 						the login functionality by clicking the &ldquo;Sign In&rdquo; link
 						at the top right!
 					</p>
-					<ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+					<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{UserProfiles.map(
 							(userProfile: {
 								id: number;

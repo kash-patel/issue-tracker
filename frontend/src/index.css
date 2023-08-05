@@ -5,8 +5,13 @@
 @layer base {
 	main {
 		max-width: 64rem;
-		margin: 0 auto;
+		margin: auto;
+		margin-top: 4em;
 		padding: 1em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 	}
 
 	h1 {
@@ -15,6 +20,10 @@
 
 	h2 {
 		@apply text-xl font-bold;
+	}
+
+	svg {
+		@apply inline-block;
 	}
 }
 
