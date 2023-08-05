@@ -43,7 +43,7 @@ const requirePermissions = (
 					}
 
 					const sendingToOwn: boolean =
-						canSendToOwn && userId === parseInt(req.params.id);
+						canSendToOwn && userId == parseInt(req.params.id);
 
 					if (!userHasRequiredResourcePermissions && !sendingToOwn) {
 						res.status(401);

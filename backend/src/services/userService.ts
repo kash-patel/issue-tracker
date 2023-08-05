@@ -224,12 +224,13 @@ function extractUserRoles(rows: Array<any>): {
 		} = {};
 
 		rows.forEach((row) => {
-			if (row.resid)
+			if (row.rid) {
 				userRoles[row.rid] = {
 					roleName: row.rname,
 					departmentId: row.did,
 					departmentName: row.dname,
 				};
+			}
 		});
 
 		return userRoles;
@@ -249,7 +250,7 @@ function extractUserDepartments(rows: Array<any>): {
 		} = {};
 
 		rows.forEach((row) => {
-			if (row.resid) userDepartments[row.did] = row.dname;
+			if (row.rid) userDepartments[row.did] = row.dname;
 		});
 
 		return userDepartments;
