@@ -80,7 +80,9 @@ const updateUserRoles = async (id: number, newUserRoles: Array<number>) => {
 		const updatedUserRoles: {
 			[departmentId: number]: {
 				departmentName: string;
-				[roleId: number]: string;
+				roles: {
+					[roleId: number]: string;
+				};
 			};
 		} = await getUserRoles(id);
 
@@ -207,7 +209,9 @@ function extractUserDetails(rows: Array<any>): UserDetails {
 function extractUserRoles(rows: Array<any>): {
 	[departmentId: number]: {
 		departmentName: string;
-		[roleId: number]: string;
+		roles: {
+			[roleId: number]: string;
+		};
 	};
 } {
 	try {
@@ -216,15 +220,17 @@ function extractUserRoles(rows: Array<any>): {
 		const userRoles: {
 			[departmentId: number]: {
 				departmentName: string;
-				[roleId: number]: string;
+				roles: {
+					[roleId: number]: string;
+				};
 			};
 		} = {};
 
 		rows.forEach((row) => {
 			if (row.rid) {
 				if (!userRoles[row.did])
-					userRoles[row.did] = { departmentName: row.dname };
-				userRoles[row.did][row.rid] = row.rname;
+					userRoles[row.did] = { departmentName: row.dname, roles: {} };
+				userRoles[row.did].roles[row.rid] = row.rname;
 			}
 		});
 
