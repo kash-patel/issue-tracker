@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+// import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { setCredentials, clearCredentials } from "../slices/authSlice";
@@ -9,7 +9,6 @@ import {
 } from "../slices/usersApiSlice";
 import { UserProfiles } from "../data/userProfiles";
 import BlockingLoader from "../components/BlockingLoader";
-import { FaAngleRight } from "react-icons/fa6";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 function getRolesString(roles: string[]): string {

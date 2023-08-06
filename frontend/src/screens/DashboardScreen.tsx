@@ -4,6 +4,7 @@ import BlockingLoader from "../components/BlockingLoader";
 import { useEffect } from "react";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import { FaAngleRight } from "react-icons/fa6";
+import { ResourceDisplayDetails } from "../utilities/utils";
 
 const DashboardScreen = () => {
 	const navigate = useNavigate();
@@ -36,25 +37,30 @@ const DashboardScreen = () => {
 					</p>
 
 					<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{Object.keys(resources).map((resourceId: string) => (
-							<li
-								key={resourceId}
-								className={`p-4 ${
-									parseInt(resources[resourceId].permissionId) == 2
-										? "bg-zinc-500"
-										: "bg-emerald-600"
-								} hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none`}
-							>
-								<Link to={"#"}>
-									<div className="flex flex-row justify-between items-center">
-										<p className="uppercase tracking-widest inline">
-											{resources[resourceId].resourceName}
-										</p>
-										<FaAngleRight />
-									</div>
-								</Link>
-							</li>
-						))}
+						{Object.keys(resources).map((resourceId: string) =>
+							ResourceDisplayDetails[parseInt(resourceId)].visible ? (
+								<li
+									key={resourceId}
+									className={`p-4 ${
+										parseInt(resources[resourceId].permissionId) == 2
+											? "bg-zinc-500"
+											: "bg-emerald-600"
+									} hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none`}
+								>
+									<Link to={ResourceDisplayDetails[parseInt(resourceId)].url}>
+										<div className="flex flex-row justify-between items-center">
+											<p className="uppercase tracking-widest inline">
+												{
+													ResourceDisplayDetails[parseInt(resourceId)]
+														.displayName
+												}
+											</p>
+											<FaAngleRight />
+										</div>
+									</Link>
+								</li>
+							) : null
+						)}
 					</ul>
 				</>
 			)}
