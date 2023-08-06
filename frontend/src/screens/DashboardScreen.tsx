@@ -39,16 +39,15 @@ const DashboardScreen = () => {
 					<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{Object.keys(resources).map((resourceId: string) =>
 							ResourceDisplayDetails[parseInt(resourceId)].visible ? (
-								<li
-									key={resourceId}
-									className={`p-4 ${
-										parseInt(resources[resourceId].permissionId) == 2
-											? "bg-zinc-500"
-											: "bg-emerald-600"
-									} hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none`}
-								>
+								<li key={resourceId}>
 									<Link to={ResourceDisplayDetails[parseInt(resourceId)].url}>
-										<div className="flex flex-row justify-between items-center">
+										<div
+											className={`p-4 flex flex-row justify-between items-center ${
+												parseInt(resources[resourceId].permissionId) == 2
+													? "bg-zinc-500"
+													: "bg-emerald-600"
+											} hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none`}
+										>
 											<p className="uppercase tracking-widest inline">
 												{
 													ResourceDisplayDetails[parseInt(resourceId)]

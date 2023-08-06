@@ -1,5 +1,3 @@
-import Constants from "../constants";
-
 const ResourceDisplayDetails: {
 	[resourceId: number]: {
 		visible: boolean;
@@ -10,22 +8,22 @@ const ResourceDisplayDetails: {
 	1: {
 		visible: true,
 		displayName: "Animals",
-		url: Constants.ANIMALS_AND_SPECIES_URL,
+		url: "/animals",
 	},
 	2: {
 		visible: false,
 		displayName: "Departments",
-		url: Constants.DEPARTMENTS_URL,
+		url: "/departments",
 	},
 	3: {
 		visible: true,
 		displayName: "Issues",
-		url: Constants.ISSUES_URL,
+		url: "/issues",
 	},
 	4: {
 		visible: false,
 		displayName: "Park Locations",
-		url: Constants.LOCATIONS_URL,
+		url: "/locations",
 	},
 	5: {
 		visible: false,
@@ -35,27 +33,27 @@ const ResourceDisplayDetails: {
 	6: {
 		visible: true,
 		displayName: "Roles and Departments",
-		url: Constants.ROLES_AND_DEPARTMENTS_URL,
+		url: "/roles",
 	},
 	7: {
 		visible: false,
 		displayName: "Species",
-		url: Constants.SPECIES_URL,
+		url: "/species",
 	},
 	8: {
 		visible: true,
 		displayName: "Systems and Park Locations",
-		url: Constants.SYSTEMS_AND_LOCATIONS_URL,
+		url: "/systems",
 	},
 	9: {
 		visible: true,
 		displayName: "Users",
-		url: Constants.USERS_URL,
+		url: "/users",
 	},
 	10: {
 		visible: true,
 		displayName: "Park Vehicles",
-		url: Constants.VEHICLES_URL,
+		url: "/vehicles",
 	},
 };
 

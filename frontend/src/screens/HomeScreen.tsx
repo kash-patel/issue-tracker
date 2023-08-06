@@ -30,7 +30,8 @@ const HomeScreen = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [login, { isLoading, error }] = useLoginMutation();
-	const [logout] = useLogoutMutation();
+	const [logout, { isLoading: logoutLoading, error: logoutError }] =
+		useLogoutMutation();
 	const { userDetails } = useSelector((state: any) => state.auth);
 	const userRolesQuery = useGetUserRolesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -58,7 +59,7 @@ const HomeScreen = () => {
 
 	return (
 		<section>
-			{isLoading && <BlockingLoader />}
+			{(isLoading || logoutLoading) && <BlockingLoader />}
 			{/* {isLoading && (
 				<p className="px-4 py-2 mb-2 bg-amber-50 border border-amber-500 text-amber-600 rounded-md">
 					Loading...
@@ -71,6 +72,15 @@ const HomeScreen = () => {
 							? error?.error
 							: error?.data?.message
 						: error.message}
+				</p>
+			)}
+			{logoutError && (
+				<p className="px-4 py-2 mb-2 bg-red-50 border border-red-500 text-red-600 rounded-md">
+					{"status" in logoutError
+						? "error" in logoutError
+							? logoutError?.error
+							: logoutError?.data?.message
+						: logoutError.message}
 				</p>
 			)}
 			{userDetails ? (
