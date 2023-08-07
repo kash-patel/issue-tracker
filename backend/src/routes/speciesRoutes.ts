@@ -14,6 +14,11 @@ router.get(
 	AuthHandler.requirePermissions({ 7: 2 }),
 	SpeciesController.getSpeciesById
 );
+router.get(
+	"/:id/individuals",
+	AuthHandler.requirePermissions({ 7: 2, 1: 2 }),
+	SpeciesController.getSpeciesIndividuals
+);
 router.post(
 	"/",
 	AuthHandler.requirePermissions({ 7: 3 }),
