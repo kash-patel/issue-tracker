@@ -4,7 +4,7 @@ import { db } from "../config/db";
 const getAllSpecies = async () => {
 	try {
 		const result = await db.query("SELECT * FROM species;");
-		return result.rows;
+		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -14,7 +14,7 @@ const getAllSpecies = async () => {
 const getSpeciesById = async (id: string) => {
 	try {
 		const result = await db.query("SELECT * FROM species WHERE id = $1;", [id]);
-		if (result.rowCount > 0) return result.rows;
+		if (result.rowCount > 0) return transformRows(result.rows);
 		throw new Error("No such species.");
 	} catch (error) {
 		throw error;
@@ -28,7 +28,11 @@ const createSpecies = async (genus: string, species: string) => {
 			genus,
 			species,
 		]);
-		return `Created species ${genus} ${species}.`;
+		const newSpeciesQueryResult = await db.query(
+			"SELECT * FROM species WHERE genus_name = $1 AND species_name = $2;",
+			[genus, species]
+		);
+		return transformRows(newSpeciesQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -43,6 +47,33 @@ const deleteSpecies = async (id: string) => {
 		throw error;
 	}
 };
+
+function transformRows(rows: Array<any>): {
+	[speciesId: number]: {
+		genusName: string;
+		speciesName: string;
+	};
+} {
+	try {
+		const transformedRows: {
+			[speciesId: number]: {
+				genusName: string;
+				speciesName: string;
+			};
+		} = {};
+
+		rows.forEach((row) => {
+			transformedRows[row.id] = {
+				genusName: row.genus_name,
+				speciesName: row.species_name,
+			};
+		});
+
+		return transformedRows;
+	} catch (error) {
+		throw error;
+	}
+}
 
 export const SpeciesService = {
 	createSpecies,

@@ -10,7 +10,7 @@ const getAllAnimals = async (speciesId?: number) => {
 			? db.query(queryString, [speciesId])
 			: db.query(queryString));
 
-		return result.rows;
+		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -20,7 +20,7 @@ const getAllAnimals = async (speciesId?: number) => {
 const getAnimalById = async (id: number) => {
 	try {
 		const result = await db.query("SELECT * FROM animals WHERE id = $1;", [id]);
-		if (result.rowCount > 0) return result.rows;
+		if (result.rowCount > 0) return transformRows(result.rows);
 
 		throw new Error("No such animal.");
 	} catch (error) {
@@ -36,12 +36,12 @@ const createAnimal = async (name: string, speciesId: number) => {
 			name,
 		]);
 
-		const animalIdResult = await db.query("SELECT max(id) FROM animals;");
-		const animalId: number = animalIdResult.rows[0].max
-			? animalIdResult.rows[0].max
-			: 1;
+		const newAnimalQueryResult = await db.query(
+			"SELECT * FROM animals WHERE name = $1 AND species_id = $2;",
+			[name, speciesId]
+		);
 
-		return `Created animal ${name} with ID ${animalId} of species ${speciesId}.`;
+		return transformRows(newAnimalQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -51,7 +51,11 @@ const createAnimal = async (name: string, speciesId: number) => {
 const updateAnimal = async (id: number, name: string) => {
 	try {
 		await db.query("UPDATE animals SET name = $1 WHERE id = $2;", [name, id]);
-		return `Updated the name of animal ${id} to ${name}. `;
+		const updatednimalQueryResult = await db.query(
+			"SELECT * FROM animals WHERE id = $1;",
+			[id]
+		);
+		return transformRows(updatednimalQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -66,6 +70,33 @@ const deleteAnimal = async (id: number) => {
 		throw error;
 	}
 };
+
+function transformRows(rows: Array<any>): {
+	[animalId: number]: {
+		speciesId: number;
+		name: string;
+	};
+} {
+	try {
+		const transformedRows: {
+			[animalId: number]: {
+				speciesId: number;
+				name: string;
+			};
+		} = {};
+
+		rows.forEach((row) => {
+			transformedRows[row.id] = {
+				speciesId: row.species_id,
+				name: row.name,
+			};
+		});
+
+		return transformedRows;
+	} catch (error) {
+		throw error;
+	}
+}
 
 export const AnimalService = {
 	createAnimal,
