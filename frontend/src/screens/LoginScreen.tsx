@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
+import { Link } from "react-router-dom";
 import BlockingLoader from "../components/BlockingLoader";
 
 const LoginScreen = () => {
@@ -83,9 +84,16 @@ const LoginScreen = () => {
 					Loading...
 				</p>
 			)} */}
-			<p>
+			<p className="py-2">
 				If you are an employee and don&rsquo;t have an account or are having
 				trouble signing in, contact the system administrator, Mr. John Arnold.
+			</p>
+			<p className="py-2">
+				Alternatively, go to the{" "}
+				<Link to={"/"} className="text-emerald-600">
+					Home
+				</Link>{" "}
+				screen and select one of the user profiles to sign in.
 			</p>
 		</section>
 	);
