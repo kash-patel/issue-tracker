@@ -39,7 +39,7 @@ const deleteVehicle = asyncHandler(async (req, res) => {
 	if (!req.params.id)
 		throw new Error("Please specify the ID of the vehicle to DELETE.");
 	const result = await VehicleService.deleteVehicle(req.params.id);
-	res.send(result);
+	res.json(result);
 });
 
 export const VehicleController = {
