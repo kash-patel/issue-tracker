@@ -16,11 +16,7 @@ const CreateVehicleScreen = () => {
 
 	const [
 		createVehicle,
-		{
-			isLoading: createVehicleLoading,
-			error: createVehicleError,
-			isSuccess: createVehicleSuccess,
-		},
+		{ isLoading: createVehicleLoading, error: createVehicleError },
 	] = useCreateVehicleMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
