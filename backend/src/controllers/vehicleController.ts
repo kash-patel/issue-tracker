@@ -31,7 +31,7 @@ const createVehicle = asyncHandler(async (req, res) => {
 		req.body.model,
 		req.body.licensePlate
 	);
-	res.status(201).send(result);
+	res.status(201).json(result);
 });
 
 // Delete
