@@ -41,7 +41,10 @@ const VehiclesScreen = () => {
 
 	return (
 		<section>
-			<h1 className="my-8">Jurassic Park Vehicles</h1>
+			<Link to={"/dashboard"} className="inline-block mt-8">
+				<p className="text-emerald-600">&larr; Back to your dashboard</p>
+			</Link>
+			<h1 className="mb-8">Jurassic Park Vehicles</h1>
 			<p className="mb-2">
 				Please note that all vehicles in the park <em>must</em> be registered
 				with the Transportation department.

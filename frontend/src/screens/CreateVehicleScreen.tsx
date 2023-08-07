@@ -48,10 +48,10 @@ const CreateVehicleScreen = () => {
 	return (
 		<section>
 			{createVehicleLoading && <BlockingLoader />}
-			<h1 className="my-8">Add Vehicle</h1>
-			<Link to={"/vehicles"}>
+			<Link to={"/vehicles"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all vehicles</p>
 			</Link>
+			<h1 className="mb-8">Add Vehicle</h1>
 			<form onSubmit={submitHandler} className="my-4">
 				<fieldset className="flex flex-col justify-evenly gap-8 items-start">
 					<label className="w-full">
