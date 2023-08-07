@@ -8,7 +8,7 @@ const ResourceDisplayDetails: {
 	1: {
 		visible: true,
 		displayName: "Animals",
-		url: "/animals",
+		url: "/species",
 	},
 	2: {
 		visible: false,

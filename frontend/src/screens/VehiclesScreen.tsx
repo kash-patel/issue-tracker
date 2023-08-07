@@ -21,11 +21,7 @@ const VehiclesScreen = () => {
 	const getVehiclesQuery = useGetVehiclesQuery(null);
 	const [
 		deleteVehicle,
-		{
-			isLoading: isLoadingDeleteVehicle,
-			error: deleteVehicleError,
-			isSuccess: isSuccessDeleteVehicle,
-		},
+		{ isLoading: isLoadingDeleteVehicle, error: deleteVehicleError },
 	] = useDeleteVehicleMutation();
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
