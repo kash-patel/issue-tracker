@@ -19,7 +19,7 @@ const getSpeciesById = asyncHandler(async (req, res) => {
 const getSpeciesIndividuals = asyncHandler(async (req, res) => {
 	if (!req.params.id)
 		throw new Error("Please specify the ID of the species to list members of.");
-	const result = await AnimalService.getAllAnimals(req.body.speciesId);
+	const result = await AnimalService.getAllAnimals(parseInt(req.params.id));
 	res.json(result);
 });
 
