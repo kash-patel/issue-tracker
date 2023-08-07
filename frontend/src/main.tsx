@@ -14,6 +14,7 @@ import HomeScreen from "./screens/HomeScreen.tsx";
 import LoginScreen from "./screens/LoginScreen.tsx";
 import DashboardScreen from "./screens/DashboardScreen.tsx";
 import VehiclesScreen from "./screens/VehiclesScreen.tsx";
+import CreateVehicleScreen from "./screens/CreateVehicleScreen.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
 			<Route path="/login" element={<LoginScreen />} />
 			<Route path="/dashboard" element={<DashboardScreen />} />
 			<Route path="/vehicles" element={<VehiclesScreen />} />
+			<Route path="/vehicles/new" element={<CreateVehicleScreen />} />
 		</Route>
 	)
 );

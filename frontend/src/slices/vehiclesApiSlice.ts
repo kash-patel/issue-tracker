@@ -8,25 +8,28 @@ export const vehiclesApiSlice = apiSlice.injectEndpoints({
 				url: `${Constants.VEHICLES_URL}`,
 				method: "GET",
 			}),
+			providesTags: ["Vehicle"],
 		}),
-		addVehicle: builder.mutation({
-			query: (vehicleData) => ({
+		createVehicle: builder.mutation({
+			query: (body) => ({
 				url: `${Constants.VEHICLES_URL}`,
 				method: "POST",
-				body: vehicleData,
+				body: body,
 			}),
+			invalidatesTags: ["Vehicle"],
 		}),
 		deleteVehicle: builder.mutation({
-			query: (id) => ({
+			query: (id: number) => ({
 				url: `${Constants.VEHICLES_URL}/${id}`,
 				method: "DELETE",
 			}),
+			invalidatesTags: ["Vehicle"],
 		}),
 	}),
 });
 
 export const {
 	useGetVehiclesQuery,
-	useAddVehicleMutation,
+	useCreateVehicleMutation,
 	useDeleteVehicleMutation,
 } = vehiclesApiSlice;

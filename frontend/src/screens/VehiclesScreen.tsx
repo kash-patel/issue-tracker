@@ -19,20 +19,24 @@ const VehiclesScreen = () => {
 	}, [navigate, userDetails]);
 
 	const getVehiclesQuery = useGetVehiclesQuery(null);
-	const [deleteVehicle] = useDeleteVehicleMutation();
+	const [
+		deleteVehicle,
+		{
+			isLoading: isLoadingDeleteVehicle,
+			error: deleteVehicleError,
+			isSuccess: isSuccessDeleteVehicle,
+		},
+	] = useDeleteVehicleMutation();
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
 
-	const handleDeleteClick = (id: number) => {
-		return async () => {
-			try {
-				await console.log(`Delete vehicle ${id}.`);
-				// await deleteVehicle(id);
-			} catch (error) {
-				throw error;
-			}
-		};
+	const handleDeleteClick = async (id: number) => {
+		try {
+			await deleteVehicle(id).unwrap();
+		} catch (error) {
+			throw error;
+		}
 	};
 
 	return (
@@ -42,53 +46,72 @@ const VehiclesScreen = () => {
 				Please note that all vehicles in the park <em>must</em> be registered
 				with the Transportation department.
 			</p>
-			{getVehiclesQuery.isLoading || getAccessibleResourcesQuery.isLoading ? (
-				<BlockingLoader />
-			) : getVehiclesQuery.error ? (
-				<p>
+			{getVehiclesQuery.error ? (
+				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
 					{getVehiclesQuery.error?.data?.message ||
 						getVehiclesQuery.error?.message ||
 						getVehiclesQuery.error}
 				</p>
 			) : getAccessibleResourcesQuery.error ? (
-				<p>
+				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
 					{getAccessibleResourcesQuery.error?.data?.message ||
 						getAccessibleResourcesQuery.error?.message ||
 						getAccessibleResourcesQuery.error}
 				</p>
 			) : (
-				<table className="mx-auto mt-8">
-					<thead>
-						<tr>
-							<th className="px-2 py-1">ID</th>
-							<th className="px-2 py-1">Make</th>
-							<th className="px-2 py-1">Model</th>
-							<th className="px-2 py-1">License</th>
-							{getAccessibleResourcesQuery.data[10].permissionId >= 3 && (
-								<th className="px-2 py-1"></th>
-							)}
-						</tr>
-					</thead>
-					<tbody>
-						{Object.values(getVehiclesQuery.data).map((v: any) => (
-							<tr key={v.id}>
-								<td className="px-2 py-1">{v.id}</td>
-								<td className="px-2 py-1">{v.make}</td>
-								<td className="px-2 py-1">{v.model}</td>
-								<td className="px-2 py-1">{v.license_plate}</td>
+				deleteVehicleError && (
+					<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
+						{deleteVehicleError.error?.data?.message ||
+							deleteVehicleError.error?.message ||
+							deleteVehicleError.error}
+					</p>
+				)
+			)}
+
+			{getVehiclesQuery.isLoading ||
+			getAccessibleResourcesQuery.isLoading ||
+			isLoadingDeleteVehicle ? (
+				<BlockingLoader />
+			) : (
+				<div className="flex flex-col justify-start items-center">
+					<Link to={"/vehicles/new"} className="inline-block mt-4">
+						<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
+							Add Vehicle
+						</p>
+					</Link>
+					<table className="mx-auto mt-4">
+						<thead>
+							<tr>
+								<th className="px-2 py-1">ID</th>
+								<th className="px-2 py-1">Make</th>
+								<th className="px-2 py-1">Model</th>
+								<th className="px-2 py-1">License</th>
 								{getAccessibleResourcesQuery.data[10].permissionId >= 3 && (
-									<td className="px-2 py-1">
-										<Link onClick={handleDeleteClick(v.id)} to={"#"}>
-											<p className="text-red-600 font-semibold flex flex-col justify-center items-center">
-												<FaTrash />
-											</p>
-										</Link>
-									</td>
+									<th className="px-2 py-1"></th>
 								)}
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{Object.values(getVehiclesQuery.data).map((v: any) => (
+								<tr key={v.id}>
+									<td className="px-2 py-1">{v.id}</td>
+									<td className="px-2 py-1">{v.make}</td>
+									<td className="px-2 py-1">{v.model}</td>
+									<td className="px-2 py-1">{v.license_plate}</td>
+									{getAccessibleResourcesQuery.data[10].permissionId >= 3 && (
+										<td className="px-2 py-1">
+											<Link onClick={() => handleDeleteClick(v.id)} to={"#"}>
+												<p className="text-red-600 font-semibold flex flex-col justify-center items-center">
+													<FaTrash />
+												</p>
+											</Link>
+										</td>
+									)}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			)}
 		</section>
 	);

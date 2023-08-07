@@ -24,7 +24,9 @@ const DashboardScreen = () => {
 			{isLoading ? (
 				<BlockingLoader />
 			) : error ? (
-				<p>{error?.data?.message || error?.error || error?.message}</p>
+				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
+					{error?.data?.message || error?.error || error?.message}
+				</p>
 			) : (
 				<>
 					<h1 className="my-8">Dashboard</h1>

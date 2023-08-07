@@ -47,7 +47,7 @@ const LoginScreen = () => {
 						/>
 					</label>
 					<label className="w-full">
-						Password{" "}
+						Password
 						<input
 							type="password"
 							id="password"
