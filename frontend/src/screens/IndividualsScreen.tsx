@@ -95,15 +95,18 @@ const IndividualsScreen = () => {
 				</p>
 			)}
 			<div className="flex flex-col justify-start items-center">
-				<Link
-					to={`/species/${speciesId as string}/new`}
-					className="inline-block mt-4"
-				>
-					<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
-						Add Individual
-					</p>
-				</Link>
-				{Object.keys(getIndividualsQuery.data).length <= 0 ? (
+				{getAccessibleResourcesQuery.data[1].permissionId >= 3 && (
+					<Link
+						to={`/species/${speciesId as string}/new`}
+						className="inline-block mt-4"
+					>
+						<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
+							Add Individual
+						</p>
+					</Link>
+				)}
+				{Object.keys(getIndividualsQuery.data).length <= 0 &&
+				getAccessibleResourcesQuery.data[7].permissionId >= 3 ? (
 					<Link
 						to={"/species"}
 						onClick={handleDeleteSpecies}
