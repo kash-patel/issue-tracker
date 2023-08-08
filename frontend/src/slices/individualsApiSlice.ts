@@ -10,11 +10,18 @@ export const individualsApiSlice = apiSlice.injectEndpoints({
 			}),
 			providesTags: ["Animal"],
 		}),
+		getIndividualById: builder.query({
+			query: (id) => ({
+				url: `${Constants.ANIMALS_URL}/${id}`,
+				method: "GET",
+			}),
+			providesTags: ["Animal"],
+		}),
 		createIndividual: builder.mutation({
-			query: (body) => ({
+			query: ({ name, speciesId }) => ({
 				url: `${Constants.ANIMALS_URL}`,
 				method: "POST",
-				body: body,
+				body: { name, speciesId },
 			}),
 			invalidatesTags: ["Animal"],
 		}),

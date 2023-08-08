@@ -18,6 +18,7 @@ import CreateVehicleScreen from "./screens/CreateVehicleScreen.tsx";
 import SpeciesScreen from "./screens/SpeciesScreen.tsx";
 import CreateSpeciesScreen from "./screens/CreateSpeciesScreen.tsx";
 import IndividualsScreen from "./screens/IndividualsScreen.tsx";
+import CreateIndividualScreen from "./screens/CreateIndividualScreen.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -30,6 +31,10 @@ const router = createBrowserRouter(
 			<Route path="/species" element={<SpeciesScreen />} />
 			<Route path="/species/new" element={<CreateSpeciesScreen />} />
 			<Route path="/species/:speciesId" element={<IndividualsScreen />} />
+			<Route
+				path="/species/:speciesId/new"
+				element={<CreateIndividualScreen />}
+			/>
 		</Route>
 	)
 );

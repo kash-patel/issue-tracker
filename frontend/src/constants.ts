@@ -1,12 +1,12 @@
 const BASE_URL =
 	import.meta.env.ENV === "development" ? "http://localhost:3000" : "";
 const DEPARTMENTS_URL = "/api/departments";
-const ROLES_URL = "/api/roles-departments";
+const ROLES_URL = "/api/roles";
 const USERS_URL = "/api/users";
 const LOCATIONS_URL = "/api/locations";
-const SYSTEMS_URL = "/api/systems-locations";
+const SYSTEMS_URL = "/api/systems";
 const SPECIES_URL = "/api/species";
-const ANIMALS_URL = "/api/animals-species";
+const ANIMALS_URL = "/api/animals";
 const VEHICLES_URL = "/api/vehicles";
 const ISSUES_URL = "/api/issues";
 

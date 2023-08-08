@@ -134,7 +134,7 @@ const IndividualsScreen = () => {
 									<td className="px-2 py-1">
 										{getIndividualsQuery.data[i].name}
 									</td>
-									{getAccessibleResourcesQuery.data[10].permissionId >= 3 && (
+									{getAccessibleResourcesQuery.data[7].permissionId >= 3 && (
 										<td className="px-2 py-1">
 											<Link
 												onClick={() => handleDeleteIndividual(parseInt(i))}
