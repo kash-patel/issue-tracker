@@ -1,13 +1,9 @@
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import {
-	useGetSpeciesQuery,
-	useDeleteSpeciesMutation,
-} from "../slices/speciesApiSlice";
+import { useGetSpeciesQuery } from "../slices/speciesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
-import { FaTrash } from "react-icons/fa6";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const SpeciesScreen = () => {
@@ -19,21 +15,9 @@ const SpeciesScreen = () => {
 	}, [navigate, userDetails]);
 
 	const getSpeciesQuery = useGetSpeciesQuery(null);
-	const [
-		deleteSpecies,
-		{ isLoading: isLoadingDeleteSpecies, error: deleteSpeciesError },
-	] = useDeleteSpeciesMutation();
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
-
-	const handleDeleteClick = async (id: number) => {
-		try {
-			await deleteSpecies(id).unwrap();
-		} catch (error) {
-			throw error;
-		}
-	};
 
 	return (
 		<section>
@@ -53,25 +37,17 @@ const SpeciesScreen = () => {
 						getSpeciesQuery.error?.message ||
 						getSpeciesQuery.error}
 				</p>
-			) : getAccessibleResourcesQuery.error ? (
-				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{getAccessibleResourcesQuery.error?.data?.message ||
-						getAccessibleResourcesQuery.error?.message ||
-						getAccessibleResourcesQuery.error}
-				</p>
 			) : (
-				deleteSpeciesError && (
+				getAccessibleResourcesQuery.error && (
 					<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-						{deleteSpeciesError.error?.data?.message ||
-							deleteSpeciesError.error?.message ||
-							deleteSpeciesError.error}
+						{getAccessibleResourcesQuery.error?.data?.message ||
+							getAccessibleResourcesQuery.error?.message ||
+							getAccessibleResourcesQuery.error}
 					</p>
 				)
 			)}
 
-			{getSpeciesQuery.isLoading ||
-			getAccessibleResourcesQuery.isLoading ||
-			isLoadingDeleteSpecies ? (
+			{getSpeciesQuery.isLoading || getAccessibleResourcesQuery.isLoading ? (
 				<BlockingLoader />
 			) : (
 				<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

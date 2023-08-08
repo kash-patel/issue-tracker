@@ -10,6 +10,20 @@ export const speciesApiSlice = apiSlice.injectEndpoints({
 			}),
 			providesTags: ["Species"],
 		}),
+		getSpeciesById: builder.query({
+			query: (id) => ({
+				url: `${Constants.SPECIES_URL}/${id}`,
+				method: "GET",
+			}),
+			providesTags: ["Species"],
+		}),
+		getSpeciesIndividuals: builder.query({
+			query: (speciesId) => ({
+				url: `${Constants.SPECIES_URL}/${speciesId}/individuals`,
+				method: "GET",
+			}),
+			providesTags: ["Animal"],
+		}),
 		createSpecies: builder.mutation({
 			query: (body) => ({
 				url: `${Constants.SPECIES_URL}`,
@@ -19,7 +33,7 @@ export const speciesApiSlice = apiSlice.injectEndpoints({
 			invalidatesTags: ["Species"],
 		}),
 		deleteSpecies: builder.mutation({
-			query: (id: number) => ({
+			query: (id) => ({
 				url: `${Constants.SPECIES_URL}/${id}`,
 				method: "DELETE",
 			}),
@@ -30,6 +44,8 @@ export const speciesApiSlice = apiSlice.injectEndpoints({
 
 export const {
 	useGetSpeciesQuery,
+	useGetSpeciesByIdQuery,
+	useGetSpeciesIndividualsQuery,
 	useCreateSpeciesMutation,
 	useDeleteSpeciesMutation,
 } = speciesApiSlice;
