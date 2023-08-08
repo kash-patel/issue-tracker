@@ -11,7 +11,7 @@ const getAllRoles = async (departmentId?: string) => {
 			? db.query(queryString, [departmentId])
 			: db.query(queryString));
 
-		return result.rows;
+		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -21,7 +21,7 @@ const getAllRoles = async (departmentId?: string) => {
 const getRoleById = async (id: string) => {
 	try {
 		const result = await db.query("SELECT * FROM roles WHERE id = $1;", [id]);
-		if (result.rowCount > 0) return result.rows;
+		if (result.rowCount > 0) return transformRows(result.rows);
 
 		throw new Error("No such role.");
 	} catch (error) {
@@ -57,9 +57,12 @@ const createRole = async (
 			);
 		}
 
-		return `Created role ${name} with permissions ${JSON.stringify(
-			resourcePermissions
-		)}`;
+		const newRoleQueryResult = await db.query(
+			"SELECT * FROM roles WHERE department_id = $1 AND name = $2;",
+			[departmentId, name]
+		);
+
+		return transformRows(newRoleQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -113,14 +116,12 @@ const updateRole = async (
 					);
 			}
 		}
-		let responseString: string = "";
 
-		if (name) responseString += `Updated the name of role ${id} to ${name}. `;
-		if (resourcePermissions)
-			responseString += `Updated the resource permissions of role ${id} to ${JSON.stringify(
-				resourcePermissions
-			)}.`;
-		return responseString;
+		const updatedRoleQueryResult = await db.query(
+			"SELECT * FROM roles WHERE id = $1;",
+			[id]
+		);
+		return transformRows(updatedRoleQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -139,6 +140,29 @@ const deleteRole = async (id: string) => {
 		throw error;
 	}
 };
+
+function transformRows(rows: Array<any>): {
+	[roleId: number]: {
+		departmentId: number;
+		name: string;
+	};
+} {
+	const roles: {
+		[roleId: number]: {
+			departmentId: number;
+			name: string;
+		};
+	} = {};
+
+	rows.forEach((row) => {
+		roles[row.id] = {
+			departmentId: row.department_id,
+			name: row.name,
+		};
+	});
+
+	return roles;
+}
 
 export const RoleService = {
 	createRole,

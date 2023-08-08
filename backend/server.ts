@@ -11,6 +11,7 @@ import systemRouter from "./src/routes/systemRoutes";
 import vehicleRouter from "./src/routes/vehicleRoutes";
 import speciesRouter from "./src/routes/speciesRoutes";
 import animalRouter from "./src/routes/animalRoutes";
+import roleResourcePermissionRouter from "./src/routes/roleResourcePermissionRoutes";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -27,6 +28,7 @@ app.use("/api/systems", systemRouter);
 app.use("/api/vehicles", vehicleRouter);
 app.use("/api/species", speciesRouter);
 app.use("/api/animals", animalRouter);
+app.use("/api/roleResourcePermissions", roleResourcePermissionRouter);
 
 app.use(notFoundError);
 app.use(errorHandler);

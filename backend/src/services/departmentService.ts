@@ -4,7 +4,7 @@ import { db } from "../config/db";
 const getAllDepartments = async () => {
 	try {
 		const result = await db.query("SELECT * FROM departments;");
-		return result.rows;
+		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -16,7 +16,7 @@ const getDepartmentById = async (id: string) => {
 		const result = await db.query("SELECT * FROM departments WHERE id = $1;", [
 			id,
 		]);
-		if (result.rowCount > 0) return result.rows;
+		if (result.rowCount > 0) return transformRows(result.rows);
 
 		throw new Error("No such department.");
 	} catch (error) {
@@ -28,7 +28,11 @@ const getDepartmentById = async (id: string) => {
 const createDepartment = async (name: string) => {
 	try {
 		await db.query("INSERT INTO departments VALUES (DEFAULT, $1);", [name]);
-		return `Created department ${name}.`;
+		const newDepartmentQueryResult = await db.query(
+			"SELECT * FROM departments WHERE name = $1;",
+			[name]
+		);
+		return transformRows(newDepartmentQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -41,7 +45,11 @@ const updateDepartment = async (id: string, name: string) => {
 			name,
 			id,
 		]);
-		return `Renamed department ${id} to ${name}.`;
+		const updatedDepartmentQueryResult = await db.query(
+			"SELECT * FROM departments WHERE id = $1;",
+			[id]
+		);
+		return transformRows(updatedDepartmentQueryResult.rows);
 	} catch (error) {
 		throw error;
 	}
@@ -56,6 +64,20 @@ const deleteDepartment = async (id: string) => {
 		throw error;
 	}
 };
+
+function transformRows(rows: Array<any>): {
+	[departmentId: number]: string;
+} {
+	const departments: {
+		[departmentId: number]: string;
+	} = {};
+
+	rows.forEach((row) => {
+		departments[row.id] = row.name;
+	});
+
+	return departments;
+}
 
 export const DepartmentService = {
 	createDepartment,

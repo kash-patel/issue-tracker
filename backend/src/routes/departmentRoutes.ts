@@ -14,6 +14,11 @@ router.get(
 	AuthHandler.requirePermissions({ 2: 2 }),
 	DepartmentController.getDepartmentById
 );
+router.get(
+	"/:id/roles",
+	AuthHandler.requirePermissions({ 2: 2, 6: 2 }),
+	DepartmentController.getDepartmentRoles
+);
 router.post(
 	"/",
 	AuthHandler.requirePermissions({ 2: 3 }),
