@@ -1,23 +1,23 @@
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, FormEvent, useState } from "react";
-import { useCreateSpeciesMutation } from "../slices/speciesApiSlice";
+import { useCreateRoleMutation } from "../slices/rolesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-const CreateSpeciesScreen = () => {
+const CreateRoleScreen = () => {
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
+
+	const { departmentId } = useParams();
 
 	useEffect(() => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [
-		createSpecies,
-		{ isLoading: createSpeciesLoading, error: createSpeciesError },
-	] = useCreateSpeciesMutation();
+	const [createRole, { isLoading: createRoleLoading, error: createRoleError }] =
+		useCreateRoleMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -26,19 +26,20 @@ const CreateSpeciesScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[7] < 3
+			getAccessibleResourcesQuery.data[6] < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [genusName, setGenusName] = useState("");
-	const [speciesName, setSpeciesName] = useState("");
+	const [name, setName] = useState("");
 
 	const submitHandler = async (e: FormEvent) => {
 		e.preventDefault();
 		try {
-			await createSpecies({ genus: genusName, species: speciesName }).unwrap();
-			navigate("/species");
+			await createRole({
+				name: name,
+			}).unwrap();
+			navigate("/roles");
 		} catch (err: any) {
 			console.log(err?.data?.message || err?.message || err?.error);
 		}
@@ -46,49 +47,41 @@ const CreateSpeciesScreen = () => {
 
 	return (
 		<section>
-			{createSpeciesLoading && <BlockingLoader />}
-			<Link to={"/species"} className="inline-block mt-8">
-				<p className="text-emerald-600">&larr; Back to all species</p>
+			{createRoleLoading && <BlockingLoader />}
+			<Link to={`/departments/${departmentId}`} className="inline-block mt-8">
+				<p className="text-emerald-600">&larr; Back to department</p>
 			</Link>
-			<h1 className="mb-8">Add Species</h1>
+			<h1 className="mb-8">Add Role</h1>
 			<form onSubmit={submitHandler} className="my-4">
 				<fieldset className="flex flex-col justify-evenly gap-8 items-start">
 					<label className="w-full">
-						Genus
+						Name
 						<input
 							type="text"
-							id="make"
-							name="make"
-							onChange={(e) => setGenusName(e.target.value)}
+							id="name"
+							name="name"
+							onChange={(e) => setName(e.target.value)}
 							className="w-full"
 						/>
 					</label>
-					<label className="w-full">
-						Species
-						<input
-							type="text"
-							id="model"
-							name="model"
-							onChange={(e) => setSpeciesName(e.target.value)}
-							className="w-full"
-						/>
-					</label>
-					{createSpeciesError && (
+					{createRoleError && (
 						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{createSpeciesError.error?.data?.message ||
-								createSpeciesError.error?.message ||
-								createSpeciesError.error}
+							{"status" in createRoleError
+								? "error" in createRoleError
+									? createRoleError?.error
+									: createRoleError?.data?.message
+								: createRoleError.message}
 						</p>
 					)}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
 					>
-						Add Species
+						Add Role
 					</button>
 					<button
 						type="button"
-						onClick={() => navigate("/species")}
+						onClick={() => navigate(`/departments/${departmentId}`)}
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
 					>
 						Cancel
@@ -99,4 +92,4 @@ const CreateSpeciesScreen = () => {
 	);
 };
 
-export default CreateSpeciesScreen;
+export default CreateRoleScreen;

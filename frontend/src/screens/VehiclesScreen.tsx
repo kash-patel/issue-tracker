@@ -19,13 +19,23 @@ const VehiclesScreen = () => {
 	}, [navigate, userDetails]);
 
 	const getVehiclesQuery = useGetVehiclesQuery(null);
+
 	const [
 		deleteVehicle,
 		{ isLoading: isLoadingDeleteVehicle, error: deleteVehicleError },
 	] = useDeleteVehicleMutation();
+
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
+
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[10] < 2
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
 	const handleDeleteClick = async (id: number) => {
 		try {

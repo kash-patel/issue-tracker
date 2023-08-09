@@ -2,17 +2,17 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import {
-	useGetSpeciesByIdQuery,
-	useGetSpeciesIndividualsQuery,
-	useDeleteSpeciesMutation,
-} from "../slices/speciesApiSlice";
-import { useDeleteIndividualMutation } from "../slices/individualsApiSlice";
+	useGetDepartmentByIdQuery,
+	useGetDepartmentRolesQuery,
+	useDeleteDepartmentMutation,
+} from "../slices/departmentsApiSlice";
+import { useDeleteRoleMutation } from "../slices/rolesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { FaTrash } from "react-icons/fa6";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-const IndividualsScreen = () => {
+const RolesScreen = () => {
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
 
@@ -20,23 +20,23 @@ const IndividualsScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const { speciesId } = useParams();
+	const { departmentId } = useParams();
 
-	const getIndividualsQuery = useGetSpeciesIndividualsQuery(
-		parseInt(speciesId!)
+	const getRolesQuery = useGetDepartmentRolesQuery(parseInt(departmentId!));
+
+	const getDepartmentByIdQuery = useGetDepartmentByIdQuery(
+		departmentId as string
 	);
 
-	const getSpeciesByIdQuery = useGetSpeciesByIdQuery(speciesId as string);
+	const [
+		deleteRole,
+		{ isLoading: isLoadingDeleteRole, error: deleteRoleError },
+	] = useDeleteRoleMutation();
 
 	const [
-		deleteIndividual,
-		{ isLoading: isLoadingDeleteIndividuals, error: deleteIndividualError },
-	] = useDeleteIndividualMutation();
-
-	const [
-		deleteSpecies,
-		{ isLoading: isLoadingDeleteSpecies, error: deleteSpeciesError },
-	] = useDeleteSpeciesMutation();
+		deleteDepartment,
+		{ isLoading: isLoadingDeleteDepartment, error: deleteDepartmentError },
+	] = useDeleteDepartmentMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -45,35 +45,35 @@ const IndividualsScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[1] < 2
+			getAccessibleResourcesQuery.data[6] < 2
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
 
 	const error =
-		getSpeciesByIdQuery.error ||
-		getIndividualsQuery.error ||
+		getDepartmentByIdQuery.error ||
+		getRolesQuery.error ||
 		getAccessibleResourcesQuery.error ||
-		deleteIndividualError ||
-		deleteSpeciesError;
+		deleteRoleError ||
+		deleteDepartmentError;
 
 	const loading: boolean =
-		getSpeciesByIdQuery.isLoading ||
-		getIndividualsQuery.isLoading ||
+		getDepartmentByIdQuery.isLoading ||
+		getRolesQuery.isLoading ||
 		getAccessibleResourcesQuery.isLoading ||
-		isLoadingDeleteIndividuals ||
-		isLoadingDeleteSpecies;
+		isLoadingDeleteRole ||
+		isLoadingDeleteDepartment;
 
-	const handleDeleteSpecies = async () => {
+	const handleDeleteDepartment = async () => {
 		try {
-			await deleteSpecies(speciesId as string).unwrap();
+			await deleteDepartment(departmentId as string).unwrap();
 		} catch (error) {
 			throw error;
 		}
 	};
-	const handleDeleteIndividual = async (id: number) => {
+	const handleDeleteRole = async (id: number) => {
 		try {
-			await deleteIndividual(id).unwrap();
+			await deleteRole(id).unwrap();
 		} catch (error) {
 			throw error;
 		}
@@ -83,18 +83,14 @@ const IndividualsScreen = () => {
 		<BlockingLoader />
 	) : (
 		<section>
-			<Link to={"/species"} className="inline-block mt-8">
-				<p className="text-emerald-600">&larr; Back to all species</p>
+			<Link to={"/departments"} className="inline-block mt-8">
+				<p className="text-emerald-600">&larr; Back to all departments</p>
 			</Link>
 			<h1 className="mb-8">
-				{getSpeciesByIdQuery.data[speciesId as string].genusName}&nbsp;
-				{getSpeciesByIdQuery.data[speciesId as string].speciesName}
+				{getDepartmentByIdQuery.data[departmentId as string]}
 			</h1>
 			<p className="mb-2">
-				Please note that the prehistoric animal biodiversity in Jurassic Park is
-				carefully managed by the Genetic Engineering department. If you have
-				questions or concerns, please do <em>not</em> contact Chief Geneticist
-				Dr. Henry Wu directly.
+				Here at Jurassic Park, every department is valued and needed.
 			</p>
 
 			{error && (
@@ -103,25 +99,25 @@ const IndividualsScreen = () => {
 				</p>
 			)}
 			<div className="flex flex-col justify-start items-center">
-				{getAccessibleResourcesQuery.data[1].permissionId >= 3 && (
+				{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
 					<Link
-						to={`/species/${speciesId as string}/new`}
+						to={`/departments/${departmentId as string}/new`}
 						className="inline-block mt-4"
 					>
 						<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
-							Add Individual
+							Add Role
 						</p>
 					</Link>
 				)}
-				{Object.keys(getIndividualsQuery.data).length <= 0 &&
-				getAccessibleResourcesQuery.data[7].permissionId >= 3 ? (
+				{Object.keys(getRolesQuery.data).length <= 0 &&
+				getAccessibleResourcesQuery.data[2].permissionId >= 3 ? (
 					<Link
-						to={"/species"}
-						onClick={handleDeleteSpecies}
+						to={"/departments"}
+						onClick={handleDeleteDepartment}
 						className="inline-block mt-4"
 					>
 						<p className="text-emerald-600 hover:text-zinc-800 transition-all inline-block">
-							Delete species
+							Delete department
 						</p>
 					</Link>
 				) : (
@@ -130,22 +126,26 @@ const IndividualsScreen = () => {
 							<tr>
 								<th className="px-2 py-1">ID</th>
 								<th className="px-2 py-1">Name</th>
-								{getAccessibleResourcesQuery.data[1].permissionId >= 3 && (
+								{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
 									<th className="px-2 py-1"></th>
 								)}
 							</tr>
 						</thead>
 						<tbody>
-							{Object.keys(getIndividualsQuery.data).map((i: string) => (
+							{Object.keys(getRolesQuery.data).map((i: string) => (
 								<tr key={i}>
 									<td className="px-2 py-1">{i}</td>
 									<td className="px-2 py-1">
-										{getIndividualsQuery.data[i].name}
+										<Link to={`/roles/${i}`}>
+											<p className="underline text-emerald-600">
+												{getRolesQuery.data[i].name}
+											</p>
+										</Link>
 									</td>
-									{getAccessibleResourcesQuery.data[1].permissionId >= 3 && (
+									{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
 										<td className="px-2 py-1">
 											<Link
-												onClick={() => handleDeleteIndividual(parseInt(i))}
+												onClick={() => handleDeleteRole(parseInt(i))}
 												to={"#"}
 											>
 												<p className="text-red-600 font-semibold flex flex-col justify-center items-center">
@@ -164,4 +164,4 @@ const IndividualsScreen = () => {
 	);
 };
 
-export default IndividualsScreen;
+export default RolesScreen;

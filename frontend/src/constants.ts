@@ -9,6 +9,7 @@ const SPECIES_URL = "/api/species";
 const ANIMALS_URL = "/api/animals";
 const VEHICLES_URL = "/api/vehicles";
 const ISSUES_URL = "/api/issues";
+const ROLE_RESOURCE_PERMISSIONS_URL = "/api/roleResourcePermissions";
 
 const Constants = {
 	BASE_URL,
@@ -21,6 +22,7 @@ const Constants = {
 	ANIMALS_URL,
 	VEHICLES_URL,
 	ISSUES_URL,
+	ROLE_RESOURCE_PERMISSIONS_URL,
 };
 
 export default Constants;

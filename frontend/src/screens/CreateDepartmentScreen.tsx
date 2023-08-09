@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, FormEvent, useState } from "react";
-import { useCreateSpeciesMutation } from "../slices/speciesApiSlice";
+import { useCreateDepartmentMutation } from "../slices/departmentsApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
-const CreateSpeciesScreen = () => {
+const CreateDepartmentScreen = () => {
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
 
@@ -15,9 +15,9 @@ const CreateSpeciesScreen = () => {
 	}, [navigate, userDetails]);
 
 	const [
-		createSpecies,
-		{ isLoading: createSpeciesLoading, error: createSpeciesError },
-	] = useCreateSpeciesMutation();
+		createDepartment,
+		{ isLoading: createDepartmentLoading, error: createDepartmentError },
+	] = useCreateDepartmentMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -26,19 +26,20 @@ const CreateSpeciesScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[7] < 3
+			getAccessibleResourcesQuery.data[2] < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [genusName, setGenusName] = useState("");
-	const [speciesName, setSpeciesName] = useState("");
+	const [name, setName] = useState("");
 
 	const submitHandler = async (e: FormEvent) => {
 		e.preventDefault();
 		try {
-			await createSpecies({ genus: genusName, species: speciesName }).unwrap();
-			navigate("/species");
+			await createDepartment({
+				name: name,
+			}).unwrap();
+			navigate("/departments");
 		} catch (err: any) {
 			console.log(err?.data?.message || err?.message || err?.error);
 		}
@@ -46,49 +47,41 @@ const CreateSpeciesScreen = () => {
 
 	return (
 		<section>
-			{createSpeciesLoading && <BlockingLoader />}
-			<Link to={"/species"} className="inline-block mt-8">
-				<p className="text-emerald-600">&larr; Back to all species</p>
+			{createDepartmentLoading && <BlockingLoader />}
+			<Link to={"/departments"} className="inline-block mt-8">
+				<p className="text-emerald-600">&larr; Back to all departments</p>
 			</Link>
-			<h1 className="mb-8">Add Species</h1>
+			<h1 className="mb-8">Add Department</h1>
 			<form onSubmit={submitHandler} className="my-4">
 				<fieldset className="flex flex-col justify-evenly gap-8 items-start">
 					<label className="w-full">
-						Genus
+						Name
 						<input
 							type="text"
-							id="make"
-							name="make"
-							onChange={(e) => setGenusName(e.target.value)}
+							id="name"
+							name="name"
+							onChange={(e) => setName(e.target.value)}
 							className="w-full"
 						/>
 					</label>
-					<label className="w-full">
-						Species
-						<input
-							type="text"
-							id="model"
-							name="model"
-							onChange={(e) => setSpeciesName(e.target.value)}
-							className="w-full"
-						/>
-					</label>
-					{createSpeciesError && (
+					{createDepartmentError && (
 						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{createSpeciesError.error?.data?.message ||
-								createSpeciesError.error?.message ||
-								createSpeciesError.error}
+							{"status" in createDepartmentError
+								? "error" in createDepartmentError
+									? createDepartmentError?.error
+									: createDepartmentError?.data?.message
+								: createDepartmentError.message}
 						</p>
 					)}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
 					>
-						Add Species
+						Add Department
 					</button>
 					<button
 						type="button"
-						onClick={() => navigate("/species")}
+						onClick={() => navigate("/departments")}
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
 					>
 						Cancel
@@ -99,4 +92,4 @@ const CreateSpeciesScreen = () => {
 	);
 };
 
-export default CreateSpeciesScreen;
+export default CreateDepartmentScreen;

@@ -11,8 +11,8 @@ const ResourceDisplayDetails: {
 		url: "/species",
 	},
 	2: {
-		visible: false,
-		displayName: "Departments",
+		visible: true,
+		displayName: "Departments and Roles",
 		url: "/departments",
 	},
 	3: {
@@ -31,8 +31,8 @@ const ResourceDisplayDetails: {
 		url: "/",
 	},
 	6: {
-		visible: true,
-		displayName: "Roles and Departments",
+		visible: false,
+		displayName: "Roles",
 		url: "/roles",
 	},
 	7: {

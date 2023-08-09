@@ -19,6 +19,11 @@ import SpeciesScreen from "./screens/SpeciesScreen.tsx";
 import CreateSpeciesScreen from "./screens/CreateSpeciesScreen.tsx";
 import IndividualsScreen from "./screens/IndividualsScreen.tsx";
 import CreateIndividualScreen from "./screens/CreateIndividualScreen.tsx";
+import DepartmentsScreen from "./screens/DepartmentsScreen.tsx";
+import RolesScreen from "./screens/RolesScreen.tsx";
+import CreateDepartmentScreen from "./screens/CreateDepartmentScreen.tsx";
+import CreateRoleScreen from "./screens/CreateRoleScreen.tsx";
+import UpdateRoleScreen from "./screens/UpdateRoleScreen.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -35,6 +40,14 @@ const router = createBrowserRouter(
 				path="/species/:speciesId/new"
 				element={<CreateIndividualScreen />}
 			/>
+			<Route path="/departments" element={<DepartmentsScreen />} />
+			<Route path="/departments/new" element={<CreateDepartmentScreen />} />
+			<Route path="/departments/:departmentId" element={<RolesScreen />} />
+			<Route
+				path="/departments/:departmentId/new"
+				element={<CreateRoleScreen />}
+			/>
+			<Route path="/roles/:roleId" element={<UpdateRoleScreen />} />
 		</Route>
 	)
 );
