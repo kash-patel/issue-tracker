@@ -8,6 +8,19 @@ const getAllRoleResourcePermissions = async () => {
 		throw error;
 	}
 };
+
+const getRoleResourcePermissionsByRoleId = async (roleId: number) => {
+	try {
+		const result = await db.query(
+			"SELECT * FROM role_resource_permissions WHERE role_id = $1;",
+			[roleId]
+		);
+		return transformRows(result.rows);
+	} catch (error) {
+		throw error;
+	}
+};
+
 const getRoleResourcePermissionById = async (id: number) => {
 	try {
 		const result = await db.query(
@@ -99,6 +112,7 @@ function transformRows(rows: Array<any>): {
 export const RoleResourcePermissionService = {
 	getAllRoleResourcePermissions,
 	getRoleResourcePermissionById,
+	getRoleResourcePermissionsByRoleId,
 	createRoleResourcePermission,
 	updateRoleResourcePermission,
 	deleteRoleResourcePermission,

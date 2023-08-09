@@ -14,6 +14,11 @@ router.get(
 	AuthHandler.requirePermissions({ 6: 2 }),
 	RoleController.getRoleById
 );
+router.get(
+	"/:id/permissions",
+	AuthHandler.requirePermissions({ 6: 2 }),
+	RoleController.getRoleResourcePermissionsById
+);
 router.post(
 	"/",
 	AuthHandler.requirePermissions({ 6: 3 }),

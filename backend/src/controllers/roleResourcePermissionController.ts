@@ -12,7 +12,7 @@ const getAllRoleResourcePermissions = asyncHandler(async (req, res) => {
 const getRoleResourcePermissionById = asyncHandler(async (req, res) => {
 	if (!req.params.id)
 		throw new Error(
-			"Please specify the ID of the roleResourcePermission to GET."
+			"Please specify the ID of the role resource permission to get."
 		);
 	const result =
 		await RoleResourcePermissionService.getRoleResourcePermissionById(
