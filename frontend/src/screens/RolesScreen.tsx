@@ -95,7 +95,11 @@ const RolesScreen = () => {
 
 			{error && (
 				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{error?.data?.message || error?.message || error?.error || error}
+					{"status" in error
+						? "error" in error
+							? error?.error
+							: error?.data?.message
+						: error.message}
 				</p>
 			)}
 			<div className="flex flex-col justify-start items-center">
@@ -124,7 +128,6 @@ const RolesScreen = () => {
 					<table className="mx-auto mt-4">
 						<thead>
 							<tr>
-								<th className="px-2 py-1">ID</th>
 								<th className="px-2 py-1">Name</th>
 								{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
 									<th className="px-2 py-1"></th>
@@ -134,7 +137,6 @@ const RolesScreen = () => {
 						<tbody>
 							{Object.keys(getRolesQuery.data).map((i: string) => (
 								<tr key={i}>
-									<td className="px-2 py-1">{i}</td>
 									<td className="px-2 py-1">
 										<Link to={`/roles/${i}`}>
 											<p className="underline text-emerald-600">

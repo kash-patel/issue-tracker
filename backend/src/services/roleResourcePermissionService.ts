@@ -2,7 +2,7 @@ import { db } from "../config/db";
 
 const getAllRoleResourcePermissions = async () => {
 	try {
-		const result = await db.query("SELECT * FROM role_resource_permissions;");
+		const result = await db.query(getAllRoleResourcePermissionsQuery);
 		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
@@ -11,10 +11,9 @@ const getAllRoleResourcePermissions = async () => {
 
 const getRoleResourcePermissionsByRoleId = async (roleId: number) => {
 	try {
-		const result = await db.query(
-			"SELECT * FROM role_resource_permissions WHERE role_id = $1;",
-			[roleId]
-		);
+		const result = await db.query(getRoleResourcePermissionsByRoleIdQuery, [
+			roleId,
+		]);
 		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
@@ -23,10 +22,7 @@ const getRoleResourcePermissionsByRoleId = async (roleId: number) => {
 
 const getRoleResourcePermissionById = async (id: number) => {
 	try {
-		const result = await db.query(
-			"SELECT * FROM role_resource_permissions WHERE id = $1;",
-			[id]
-		);
+		const result = await db.query(getRoleResourcePermissionByIdQuery, [id]);
 		return transformRows(result.rows);
 	} catch (error) {
 		throw error;
@@ -44,8 +40,8 @@ const createRoleResourcePermission = async (
 			[roleId, resourceId, permissionId]
 		);
 		const newRoleResourcePermissionQueryResult = await db.query(
-			"SELECT * FROM role_resource_permissions WHERE role_id = $1 AND resource_id = $2 AND permission_id = $3;",
-			[roleId, resourceId, permissionId]
+			getRoleResourcePermissionByRoleIdAndResourceIdQuery,
+			[roleId, resourceId]
 		);
 		return transformRows(newRoleResourcePermissionQueryResult.rows);
 	} catch (error) {
@@ -63,7 +59,7 @@ const updateRoleResourcePermission = async (
 			[newPermissionId, id]
 		);
 		const updatedRoleResourcePermissionQueryResult = await db.query(
-			"SELECT * FROM role_resource_permissions WHERE id = $1;",
+			getRoleResourcePermissionByIdQuery,
 			[id]
 		);
 		return transformRows(updatedRoleResourcePermissionQueryResult.rows);
@@ -84,26 +80,33 @@ const deleteRoleResourcePermission = async (id: number) => {
 };
 
 function transformRows(rows: Array<any>): {
-	[roleResourcePermissionId: number]: {
-		roleId: number;
-		resourceId: number;
-		permissionId: number;
+	[roleId: number]: {
+		[resourceId: number]: {
+			resourceName: string;
+			permissionId: number;
+		};
 	};
 } {
 	const roleResourcePermissions: {
-		[roleResourcePermissionId: number]: {
-			roleId: number;
-			resourceId: number;
-			permissionId: number;
+		[roleId: number]: {
+			[resourceId: number]: {
+				resourceName: string;
+				permissionId: number;
+			};
 		};
 	} = {};
 
 	rows.forEach((row) => {
-		roleResourcePermissions[row.id] = {
-			roleId: row.role_id,
-			resourceId: row.resource_id,
-			permissionId: row.permission_id,
-		};
+		if (row.role_id != null) {
+			if (!roleResourcePermissions[row.role_id])
+				roleResourcePermissions[row.role_id] = {};
+
+			if (!roleResourcePermissions[row.role_id][row.resource_id])
+				roleResourcePermissions[row.role_id][row.resource_id] = {
+					resourceName: row.resource_name,
+					permissionId: row.permission_id,
+				};
+		}
 	});
 
 	return roleResourcePermissions;
@@ -117,3 +120,59 @@ export const RoleResourcePermissionService = {
 	updateRoleResourcePermission,
 	deleteRoleResourcePermission,
 };
+
+const getAllRoleResourcePermissionsQuery = `
+SELECT
+role_resource_permissions.role_id role_id,
+resources.id resource_id,
+resources.name resource_name,
+permissions.id permission_id
+FROM
+role_resource_permissions
+LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
+LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
+;`;
+
+const getRoleResourcePermissionsByRoleIdQuery = `
+SELECT
+role_resource_permissions.role_id role_id,
+resources.id resource_id,
+resources.name resource_name,
+permissions.id permission_id
+FROM
+role_resource_permissions
+LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
+LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
+WHERE
+role_resource_permissions.role_id = $1
+;`;
+
+const getRoleResourcePermissionByIdQuery = `
+SELECT
+role_resource_permissions.role_id role_id,
+resources.id resource_id,
+resources.name resource_name,
+permissions.id permission_id
+FROM
+role_resource_permissions
+LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
+LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
+WHERE
+role_resource_permissions.id = $1
+;`;
+
+const getRoleResourcePermissionByRoleIdAndResourceIdQuery = `
+SELECT
+role_resource_permissions.role_id role_id,
+resources.id resource_id,
+resources.name resource_name,
+permissions.id permission_id
+FROM
+role_resource_permissions
+LEFT JOIN resources ON role_resource_permissions.resource_id = resources.id
+LEFT JOIN permissions ON role_resource_permissions.permission_id = permissions.id
+WHERE
+role_resource_permissions.role_id = $1
+AND
+role_resource_permissions.resource_id = $2
+;`;
