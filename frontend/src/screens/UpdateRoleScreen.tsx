@@ -9,7 +9,6 @@ import {
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { useUpdateRoleResourcePermissionMutation } from "../slices/roleResourcePermissionsSlice";
 
 const UpdateRoleScreen = () => {
 	const navigate = useNavigate();
@@ -28,14 +27,6 @@ const UpdateRoleScreen = () => {
 
 	const [updateRole, { isLoading: updateRoleLoading, error: updateRoleError }] =
 		useUpdateRoleMutation();
-
-	const [
-		updateRoleResourcePermissions,
-		{
-			isLoading: updateRoleResourcePermissionsLoading,
-			error: updateRoleResourcePermissionsError,
-		},
-	] = useUpdateRoleResourcePermissionMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -131,21 +122,6 @@ const UpdateRoleScreen = () => {
 		}
 	}, [roleId]);
 
-	const updateNameHandler = async (e: FormEvent) => {
-		e.preventDefault();
-		try {
-			const args = { id: roleId as string, newName: name };
-			await updateRole(args).unwrap();
-			navigate(
-				`/departments/${
-					getRoleByIdQuery.data[parseInt(roleId as string)].departmentId
-				}`
-			);
-		} catch (err: any) {
-			console.log(err?.data?.message || err?.message || err?.error);
-		}
-	};
-
 	const handlePermissionChange = (
 		resourceId: number,
 		newPermissionId: number
@@ -186,15 +162,13 @@ const UpdateRoleScreen = () => {
 		getAccessibleResourcesQuery.isLoading ||
 		getRoleByIdQuery.isLoading ||
 		getRoleResourcePermissionsQuery.isLoading ||
-		updateRoleLoading ||
-		updateRoleResourcePermissionsLoading;
+		updateRoleLoading;
 
 	const error =
 		getAccessibleResourcesQuery.error ||
 		getRoleByIdQuery.error ||
 		getRoleResourcePermissionsQuery.error ||
-		updateRoleError ||
-		updateRoleResourcePermissionsError;
+		updateRoleError;
 
 	if (isLoading) return <BlockingLoader />;
 
@@ -254,7 +228,7 @@ const UpdateRoleScreen = () => {
 										name={`${r}-permission`}
 										value={1}
 										checked={
-											roleResourcePermissions[parseInt(r)].permissionId === 1
+											roleResourcePermissions[parseInt(r)].permissionId == 1
 										}
 										onChange={() => handlePermissionChange(parseInt(r), 1)}
 									/>
@@ -267,7 +241,7 @@ const UpdateRoleScreen = () => {
 										name={`${r}-permission`}
 										value={2}
 										checked={
-											roleResourcePermissions[parseInt(r)].permissionId === 2
+											roleResourcePermissions[parseInt(r)].permissionId == 2
 										}
 										onChange={() => handlePermissionChange(parseInt(r), 2)}
 									/>
@@ -280,7 +254,7 @@ const UpdateRoleScreen = () => {
 										name={`${r}-permission`}
 										value={3}
 										checked={
-											roleResourcePermissions[parseInt(r)].permissionId === 3
+											roleResourcePermissions[parseInt(r)].permissionId == 3
 										}
 										onChange={() => handlePermissionChange(parseInt(r), 3)}
 									/>
