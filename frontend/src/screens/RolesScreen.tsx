@@ -79,9 +79,9 @@ const RolesScreen = () => {
 		}
 	};
 
-	return loading ? (
-		<BlockingLoader />
-	) : (
+	if (loading) return <BlockingLoader />;
+
+	return (
 		<section>
 			<Link to={"/departments"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all departments</p>

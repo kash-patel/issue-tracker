@@ -25,10 +25,10 @@ export const rolesApiSlice = apiSlice.injectEndpoints({
 			providesTags: ["Role"],
 		}),
 		updateRole: builder.mutation({
-			query: ({ id, newName }) => ({
+			query: ({ id, newName, newResourcePermissions }) => ({
 				url: `${Constants.ROLES_URL}/${id}`,
-				method: "POST",
-				body: { name: newName },
+				method: "PATCH",
+				body: { name: newName, resourcePermissions: newResourcePermissions },
 			}),
 			invalidatesTags: ["Role"],
 		}),

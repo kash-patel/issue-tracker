@@ -50,6 +50,7 @@ const updateRole = asyncHandler(async (req, res) => {
 		throw new Error(
 			`Please specify the new name or resource permissions of role ${req.params.id}.`
 		);
+
 	const result = await RoleService.updateRole(
 		req.params.id,
 		req.body.name,

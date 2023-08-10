@@ -11,14 +11,6 @@ import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useUpdateRoleResourcePermissionMutation } from "../slices/roleResourcePermissionsSlice";
 
-function extractRoleResourcePermissions(data: any): {
-	[resourceId: number]: number;
-} {
-	const roleResourcePermissions = {};
-
-	return roleResourcePermissions;
-}
-
 const UpdateRoleScreen = () => {
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
@@ -54,6 +46,13 @@ const UpdateRoleScreen = () => {
 		getAccessibleResourcesQuery.data[6] < 3
 	)
 		navigate("/login");
+
+	const [name, setName] = useState("");
+
+	useEffect(() => {
+		if (getRoleByIdQuery.data && name == "")
+			setName(getRoleByIdQuery.data[roleId as string].name);
+	});
 
 	const initialRoleResourcePermissions: {
 		[resourceId: number]: {
@@ -132,15 +131,11 @@ const UpdateRoleScreen = () => {
 		}
 	}, [roleId]);
 
-	const [name, setName] = useState("");
-
 	const updateNameHandler = async (e: FormEvent) => {
 		e.preventDefault();
 		try {
-			await updateRole({
-				id: roleId,
-				newName: name,
-			}).unwrap();
+			const args = { id: roleId as string, newName: name };
+			await updateRole(args).unwrap();
 			navigate(
 				`/departments/${
 					getRoleByIdQuery.data[parseInt(roleId as string)].departmentId
@@ -158,6 +153,33 @@ const UpdateRoleScreen = () => {
 		const updatedPermissions = { ...roleResourcePermissions };
 		updatedPermissions[resourceId].permissionId = newPermissionId;
 		setRoleResourcePermissions(updatedPermissions);
+	};
+
+	const submitHandler = async (e: FormEvent) => {
+		e.preventDefault();
+
+		try {
+			const resourcePermissions: { [resourceId: number]: number } = {};
+			Object.keys(roleResourcePermissions).forEach((resourceId: string) => {
+				if (roleResourcePermissions[parseInt(resourceId)].permissionId > 1)
+					resourcePermissions[parseInt(resourceId)] =
+						roleResourcePermissions[parseInt(resourceId)].permissionId;
+			});
+
+			await updateRole({
+				id: roleId as string,
+				newName: name,
+				newResourcePermissions: resourcePermissions,
+			}).unwrap();
+
+			navigate(
+				`/departments/${
+					getRoleByIdQuery.data[parseInt(roleId as string)].departmentId
+				}`
+			);
+		} catch (error) {
+			console.log(error?.data?.message || error?.message || error?.error);
+		}
 	};
 
 	const isLoading =
@@ -188,17 +210,19 @@ const UpdateRoleScreen = () => {
 				<p className="text-emerald-600">&larr; Back to department</p>
 			</Link>
 			<h1 className="mb-8">Update Role</h1>
-			<form onSubmit={updateNameHandler} className="my-4">
+			<form onSubmit={submitHandler} className="my-4">
 				<fieldset
 					disabled={getAccessibleResourcesQuery.data[6].permissionId < 3}
-					className="flex flex-col justify-evenly gap-8 items-start"
+					className="flex flex-col justify-evenly gap-8 items-start mb-8"
 				>
 					<label className="w-full">
-						Name
+						<p>Name (required)</p>
 						<input
 							type="text"
 							id="name"
 							name="name"
+							defaultValue={name}
+							required
 							onChange={(e) => setName(e.target.value)}
 							className="w-full"
 						/>
@@ -215,66 +239,77 @@ const UpdateRoleScreen = () => {
 				</fieldset>
 				<fieldset
 					disabled={getAccessibleResourcesQuery.data[6].permissionId < 3}
-					className="flex flex-col justify-between gap-4"
+					className="flex flex-col justify-between gap-4 mb-8"
 				>
 					<h2>Role Resource Permissions</h2>
 					{Object.keys(roleResourcePermissions).map((r) => (
 						<label key={r} className="w-full flex flex-row justify-between">
 							{roleResourcePermissions[parseInt(r)].resourceName}
-							<div>
-								<input
-									type="radio"
-									id={`${r}-permission-none`}
-									name={`${r}-permission`}
-									value={1}
-									checked={
-										roleResourcePermissions[parseInt(r)].permissionId === 1
-									}
-									onChange={() => handlePermissionChange(parseInt(r), 1)}
-								/>
-								<input
-									type="radio"
-									id={`${r}-permission-read`}
-									name={`${r}-permission`}
-									value={2}
-									checked={
-										roleResourcePermissions[parseInt(r)].permissionId === 2
-									}
-									onChange={() => handlePermissionChange(parseInt(r), 2)}
-								/>
-								<input
-									type="radio"
-									id={`${r}-permission-write`}
-									name={`${r}-permission`}
-									value={3}
-									checked={
-										roleResourcePermissions[parseInt(r)].permissionId === 3
-									}
-									onChange={() => handlePermissionChange(parseInt(r), 3)}
-								/>
+							<div className="flex flex-row justify-between gap-2">
+								<label className="text-center">
+									<p>None</p>
+									<input
+										type="radio"
+										id={`${r}-permission-none`}
+										name={`${r}-permission`}
+										value={1}
+										checked={
+											roleResourcePermissions[parseInt(r)].permissionId === 1
+										}
+										onChange={() => handlePermissionChange(parseInt(r), 1)}
+									/>
+								</label>
+								<label className="text-center">
+									<p>Read</p>
+									<input
+										type="radio"
+										id={`${r}-permission-read`}
+										name={`${r}-permission`}
+										value={2}
+										checked={
+											roleResourcePermissions[parseInt(r)].permissionId === 2
+										}
+										onChange={() => handlePermissionChange(parseInt(r), 2)}
+									/>
+								</label>
+								<label className="text-center">
+									<p>Write</p>
+									<input
+										type="radio"
+										id={`${r}-permission-write`}
+										name={`${r}-permission`}
+										value={3}
+										checked={
+											roleResourcePermissions[parseInt(r)].permissionId === 3
+										}
+										onChange={() => handlePermissionChange(parseInt(r), 3)}
+									/>
+								</label>
 							</div>
 						</label>
 					))}
 				</fieldset>
-				<button
-					type="submit"
-					className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
-				>
-					Add Role
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						navigate(
-							`/departments/${
-								getRoleByIdQuery.data[roleId as string].departmentId
-							}`
-						)
-					}
-					className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
-				>
-					Cancel
-				</button>
+				<fieldset className="flex flex-row justify-around">
+					<button
+						type="submit"
+						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
+					>
+						Update Role
+					</button>
+					<button
+						type="button"
+						onClick={() =>
+							navigate(
+								`/departments/${
+									getRoleByIdQuery.data[roleId as string].departmentId
+								}`
+							)
+						}
+						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
+					>
+						Cancel
+					</button>
+				</fieldset>
 			</form>
 		</section>
 	);
