@@ -25,10 +25,11 @@ import CreateDepartmentScreen from "./screens/CreateDepartmentScreen.tsx";
 import CreateRoleScreen from "./screens/CreateRoleScreen.tsx";
 import UpdateRoleScreen from "./screens/UpdateRoleScreen.tsx";
 import UsersScreen from "./screens/UsersScreen.tsx";
+import ErrorElement from "./components/ErrorElement.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<Route path="/" element={<App />}>
+		<Route path="/" errorElement={<ErrorElement />} element={<App />}>
 			<Route index={true} path="/" element={<HomeScreen />} />
 			<Route path="/login" element={<LoginScreen />} />
 			<Route path="/dashboard" element={<DashboardScreen />} />
