@@ -40,8 +40,8 @@ const UsersScreen = () => {
 
 	return (
 		<section>
-			<Link to={"/departments"} className="inline-block mt-8">
-				<p className="text-emerald-600">&larr; Back to all departments</p>
+			<Link to={"/dashboard"} className="inline-block mt-8">
+				<p className="text-emerald-600">&larr; Back to your dashboard</p>
 			</Link>
 			<h1 className="mb-8">Users</h1>
 			<p className="mb-2">All ParkMan users.</p>
