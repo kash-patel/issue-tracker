@@ -24,6 +24,7 @@ import RolesScreen from "./screens/RolesScreen.tsx";
 import CreateDepartmentScreen from "./screens/CreateDepartmentScreen.tsx";
 import CreateRoleScreen from "./screens/CreateRoleScreen.tsx";
 import UpdateRoleScreen from "./screens/UpdateRoleScreen.tsx";
+import UsersScreen from "./screens/UsersScreen.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -48,6 +49,7 @@ const router = createBrowserRouter(
 				element={<CreateRoleScreen />}
 			/>
 			<Route path="/roles/:roleId" element={<UpdateRoleScreen />} />
+			<Route path="/users" element={<UsersScreen />} />
 		</Route>
 	)
 );

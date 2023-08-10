@@ -14,14 +14,14 @@ const getUserById = asyncHandler(async (req, res) => {
 	const user = await UserService.getUserDetailsByID(parseInt(req.params.id));
 
 	if (user) res.send(user);
-	else res.status(404).send("No such user.");
+	else res.status(404).json("No such user.");
 });
 
 const authUser = asyncHandler(async (req, res) => {
 	const { username, password } = req.body;
 	const userDetails = await UserService.authenticateUser(username, password);
 	generateJWT(res, userDetails);
-	res.status(201).send(userDetails);
+	res.status(201).json(userDetails);
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -46,13 +46,13 @@ const registerUser = asyncHandler(async (req, res) => {
 		roleIds
 	);
 	generateJWT(res, newUserDetails);
-	res.send(newUserDetails);
+	res.json(newUserDetails);
 });
 
 const getUserRoles = asyncHandler(async (req, res) => {
 	if (!req.params.id) throw new Error("Please supply a valid user ID.");
 	const userRoles = await UserService.getUserRoles(parseInt(req.params.id));
-	res.send(userRoles);
+	res.json(userRoles);
 });
 
 const updateUserRoles = asyncHandler(async (req, res) => {
@@ -67,7 +67,7 @@ const updateUserRoles = asyncHandler(async (req, res) => {
 		newUserRoles
 	);
 
-	res.send(updatedRoles);
+	res.json(updatedRoles);
 });
 
 const getUserDepartments = asyncHandler(async (req, res) => {
@@ -75,7 +75,7 @@ const getUserDepartments = asyncHandler(async (req, res) => {
 	const userDepartments = await UserService.getUserDepartments(
 		parseInt(req.params.id)
 	);
-	res.send(userDepartments);
+	res.json(userDepartments);
 });
 
 const getUserResources = asyncHandler(async (req, res) => {
@@ -83,7 +83,7 @@ const getUserResources = asyncHandler(async (req, res) => {
 	const userResources = await UserService.getUserResources(
 		parseInt(req.params.id)
 	);
-	res.send(userResources);
+	res.json(userResources);
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
@@ -94,7 +94,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 		parseInt(req.params.id)
 	);
 
-	res.send(deleteUserResult);
+	res.json(deleteUserResult);
 });
 
 export const UserController = {

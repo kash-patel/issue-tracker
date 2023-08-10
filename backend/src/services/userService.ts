@@ -167,7 +167,7 @@ const createUser = async (
 
 const deleteUser = async (id: number) => {
 	try {
-		const result = await db.query("DELETE FROM users WHERE id = $1;", [id]);
+		await db.query("DELETE FROM users WHERE id = $1;", [id]);
 		return `Deleted user ${id}.`;
 	} catch (error) {
 		throw error;

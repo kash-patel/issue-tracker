@@ -16,6 +16,32 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 				method: "POST",
 			}),
 		}),
+		getUsers: builder.query({
+			query: () => ({
+				url: Constants.USERS_URL,
+				method: "GET",
+			}),
+		}),
+		createUser: builder.mutation({
+			query: ({ username, password, firstName, lastName, roleIds }) => ({
+				url: `${Constants.USERS_URL}`,
+				method: "POST",
+				body: { username, password, firstName, lastName, roleIds },
+			}),
+		}),
+		updateUserRoles: builder.mutation({
+			query: ({ id, newUserRoles }) => ({
+				url: `${Constants.USERS_URL}/${id}`,
+				method: "PATCH",
+				body: { newUserRoles },
+			}),
+		}),
+		deleteUser: builder.mutation({
+			query: (id) => ({
+				url: `${Constants.USERS_URL}/${id}`,
+				method: "DELETE",
+			}),
+		}),
 		getUserRoles: builder.query({
 			query: (id) => ({
 				url: `${Constants.USERS_URL}/${id}/roles`,
@@ -34,6 +60,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 export const {
 	useLoginMutation,
 	useLogoutMutation,
+	useGetUsersQuery,
+	useCreateUserMutation,
+	useUpdateUserRolesMutation,
+	useDeleteUserMutation,
 	useGetUserRolesQuery,
 	useGetAccessibleResourcesQuery,
 } = usersApiSlice;
