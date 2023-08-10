@@ -97,30 +97,59 @@ const UpdateRoleScreen = () => {
 		initialRoleResourcePermissions
 	);
 
-	useEffect(() => {
-		if (
-			getRoleResourcePermissionsQuery.data &&
-			getRoleResourcePermissionsQuery.data[roleId as string]
-		) {
-			setRoleResourcePermissions((prevPermissions) => {
-				const updatedPermissions = { ...prevPermissions }; // Create a new object
+	const [didFetchResourcePermissions, setDidFetchResourcePermissions] =
+		useState(false);
 
-				Object.keys(
-					getRoleResourcePermissionsQuery.data[roleId as string]
-				).forEach((r) => {
-					const resourceId = parseInt(r);
-					updatedPermissions[resourceId] = {
-						...updatedPermissions[resourceId], // Create a new object
-						permissionId:
-							getRoleResourcePermissionsQuery.data[roleId as string][r]
-								.permissionId,
-					};
-				});
+	if (
+		!didFetchResourcePermissions &&
+		getRoleResourcePermissionsQuery.data &&
+		getRoleResourcePermissionsQuery.data[roleId as string]
+	) {
+		setRoleResourcePermissions((prevPermissions) => {
+			const updatedPermissions = { ...prevPermissions }; // Create a new object
 
-				return updatedPermissions; // Return the updated object
+			Object.keys(
+				getRoleResourcePermissionsQuery.data[roleId as string]
+			).forEach((r) => {
+				const resourceId = parseInt(r);
+				updatedPermissions[resourceId] = {
+					...updatedPermissions[resourceId], // Create a new object
+					permissionId:
+						getRoleResourcePermissionsQuery.data[roleId as string][r]
+							.permissionId,
+				};
 			});
-		}
-	}, [roleId]);
+
+			return updatedPermissions; // Return the updated object
+		});
+
+		setDidFetchResourcePermissions(true);
+	}
+
+	// useEffect(() => {
+	// 	if (
+	// 		getRoleResourcePermissionsQuery.data &&
+	// 		getRoleResourcePermissionsQuery.data[roleId as string]
+	// 	) {
+	// 		setRoleResourcePermissions((prevPermissions) => {
+	// 			const updatedPermissions = { ...prevPermissions }; // Create a new object
+
+	// 			Object.keys(
+	// 				getRoleResourcePermissionsQuery.data[roleId as string]
+	// 			).forEach((r) => {
+	// 				const resourceId = parseInt(r);
+	// 				updatedPermissions[resourceId] = {
+	// 					...updatedPermissions[resourceId], // Create a new object
+	// 					permissionId:
+	// 						getRoleResourcePermissionsQuery.data[roleId as string][r]
+	// 							.permissionId,
+	// 				};
+	// 			});
+
+	// 			return updatedPermissions; // Return the updated object
+	// 		});
+	// 	}
+	// }, [roleId]);
 
 	const handlePermissionChange = (
 		resourceId: number,
