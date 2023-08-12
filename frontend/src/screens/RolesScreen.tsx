@@ -113,7 +113,8 @@ const RolesScreen = () => {
 						</p>
 					</Link>
 				)}
-				{Object.keys(getRolesQuery.data).length <= 0 &&
+				{getRolesQuery.data &&
+				Object.keys(getRolesQuery.data).length <= 0 &&
 				getAccessibleResourcesQuery.data[2].permissionId >= 3 ? (
 					<Link
 						to={"/departments"}
@@ -125,41 +126,43 @@ const RolesScreen = () => {
 						</p>
 					</Link>
 				) : (
-					<table className="mx-auto mt-4">
-						<thead>
-							<tr>
-								<th className="px-2 py-1">Name</th>
-								{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
-									<th className="px-2 py-1"></th>
-								)}
-							</tr>
-						</thead>
-						<tbody>
-							{Object.keys(getRolesQuery.data).map((i: string) => (
-								<tr key={i}>
-									<td className="px-2 py-1">
-										<Link to={`/roles/${i}`}>
-											<p className="underline text-emerald-600">
-												{getRolesQuery.data[i].name}
-											</p>
-										</Link>
-									</td>
+					getRolesQuery.data && (
+						<table className="mx-auto mt-4">
+							<thead>
+								<tr>
+									<th className="px-2 py-1">Name</th>
 									{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
+										<th className="px-2 py-1"></th>
+									)}
+								</tr>
+							</thead>
+							<tbody>
+								{Object.keys(getRolesQuery.data).map((i: string) => (
+									<tr key={i}>
 										<td className="px-2 py-1">
-											<Link
-												onClick={() => handleDeleteRole(parseInt(i))}
-												to={"#"}
-											>
-												<p className="text-red-600 font-semibold flex flex-col justify-center items-center">
-													<FaTrash />
+											<Link to={`/roles/${i}`}>
+												<p className="underline text-emerald-600">
+													{getRolesQuery.data[i].name}
 												</p>
 											</Link>
 										</td>
-									)}
-								</tr>
-							))}
-						</tbody>
-					</table>
+										{getAccessibleResourcesQuery.data[6].permissionId >= 3 && (
+											<td className="px-2 py-1">
+												<Link
+													onClick={() => handleDeleteRole(parseInt(i))}
+													to={"#"}
+												>
+													<p className="text-red-600 font-semibold flex flex-col justify-center items-center">
+														<FaTrash />
+													</p>
+												</Link>
+											</td>
+										)}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					)
 				)}
 			</div>
 		</section>

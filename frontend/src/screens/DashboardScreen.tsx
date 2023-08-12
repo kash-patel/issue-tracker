@@ -45,7 +45,10 @@ const DashboardScreen = () => {
 									<Link to={ResourceDisplayDetails[parseInt(resourceId)].url}>
 										<div
 											className={`p-4 flex flex-row justify-between items-center ${
-												parseInt(resources[resourceId].permissionId) == 2
+												resources[
+													ResourceDisplayDetails[parseInt(resourceId)]
+														.checkPermissions
+												].permissionId < 3
 													? "bg-zinc-500"
 													: "bg-emerald-600"
 											} hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none`}

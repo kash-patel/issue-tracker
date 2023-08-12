@@ -21,6 +21,27 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 				url: Constants.USERS_URL,
 				method: "GET",
 			}),
+			providesTags: ["User"],
+		}),
+		getUserById: builder.query({
+			query: (id) => ({
+				url: `${Constants.USERS_URL}/${id}`,
+				method: "GET",
+			}),
+			providesTags: ["User"],
+		}),
+		getUserRoles: builder.query({
+			query: (id) => ({
+				url: `${Constants.USERS_URL}/${id}/roles`,
+				method: "GET",
+			}),
+			providesTags: ["User"],
+		}),
+		getAccessibleResources: builder.query({
+			query: (id) => ({
+				url: `${Constants.USERS_URL}/${id}/resources`,
+				method: "GET",
+			}),
 		}),
 		createUser: builder.mutation({
 			query: ({ username, password, firstName, lastName, roleIds }) => ({
@@ -28,31 +49,22 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 				method: "POST",
 				body: { username, password, firstName, lastName, roleIds },
 			}),
+			invalidatesTags: ["User"],
 		}),
 		updateUserRoles: builder.mutation({
 			query: ({ id, newUserRoles }) => ({
-				url: `${Constants.USERS_URL}/${id}`,
+				url: `${Constants.USERS_URL}/${id}/roles`,
 				method: "PATCH",
 				body: { newUserRoles },
 			}),
+			invalidatesTags: ["User"],
 		}),
 		deleteUser: builder.mutation({
 			query: (id) => ({
 				url: `${Constants.USERS_URL}/${id}`,
 				method: "DELETE",
 			}),
-		}),
-		getUserRoles: builder.query({
-			query: (id) => ({
-				url: `${Constants.USERS_URL}/${id}/roles`,
-				method: "GET",
-			}),
-		}),
-		getAccessibleResources: builder.query({
-			query: (id) => ({
-				url: `${Constants.USERS_URL}/${id}/resources`,
-				method: "GET",
-			}),
+			invalidatesTags: ["User"],
 		}),
 	}),
 });
@@ -61,9 +73,10 @@ export const {
 	useLoginMutation,
 	useLogoutMutation,
 	useGetUsersQuery,
+	useGetUserByIdQuery,
+	useGetUserRolesQuery,
+	useGetAccessibleResourcesQuery,
 	useCreateUserMutation,
 	useUpdateUserRolesMutation,
 	useDeleteUserMutation,
-	useGetUserRolesQuery,
-	useGetAccessibleResourcesQuery,
 } = usersApiSlice;

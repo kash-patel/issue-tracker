@@ -56,13 +56,14 @@ const UsersScreen = () => {
 				</p>
 			)}
 			<div className="flex flex-col justify-start items-center">
-				{getAccessibleResourcesQuery.data[9].permissionId >= 3 && (
-					<Link to={"/users/new"} className="inline-block mt-4">
-						<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
-							Add User
-						</p>
-					</Link>
-				)}
+				{getAccessibleResourcesQuery.data &&
+					getAccessibleResourcesQuery.data[9].permissionId >= 3 && (
+						<Link to={"/users/new"} className="inline-block mt-4">
+							<p className="px-4 py-2 bg-zinc-800 hover:bg-emerald-600 transition-all text-white inline-block rounded-md">
+								Add User
+							</p>
+						</Link>
+					)}
 				{getUsersQuery.data && Object.keys(getUsersQuery.data).length <= 0 ? (
 					<p className="inline-block">No existing users.</p>
 				) : (

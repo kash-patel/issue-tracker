@@ -119,6 +119,7 @@ const getUserResourcePermissions = async (id: number) => {
 		const doesUserExist: boolean = await userExists(id);
 		if (!doesUserExist) return {};
 		const result = await db.query(userResourcePermissionsQueryById, [id]);
+
 		return extractHighestResourcePermissions(result.rows);
 	} catch (error) {
 		throw error;
@@ -130,7 +131,7 @@ const createUser = async (
 	password: string,
 	firstName: string,
 	lastName: string,
-	roleIds: Array<number>
+	roleIds?: Array<number>
 ) => {
 	try {
 		if (await userExists(undefined, username))
@@ -150,7 +151,7 @@ const createUser = async (
 		const userDetails: UserDetails = extractUserDetails(result.rows);
 
 		// Post user roles if they exist
-		if (roleIds.length <= 0) return userDetails;
+		if (!roleIds || roleIds.length <= 0) return userDetails;
 
 		roleIds.forEach(async (roleId) => {
 			await db.query("INSERT INTO user_roles VALUES (DEFAULT, $1, $2);", [
