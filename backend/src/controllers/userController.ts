@@ -45,7 +45,6 @@ const registerUser = asyncHandler(async (req, res) => {
 		lastName,
 		roleIds
 	);
-	generateJWT(res, newUserDetails);
 	res.json(newUserDetails);
 });
 

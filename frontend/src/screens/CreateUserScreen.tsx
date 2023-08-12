@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, FormEvent, useState } from "react";
 import { useCreateUserMutation } from "../slices/usersApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
@@ -48,6 +48,7 @@ const CreateUserScreen = () => {
 			};
 
 			await createUser(userInfo).unwrap();
+			navigate(`/users/${createUserResult.data.userId}`);
 		} catch (error) {
 			console.log(error?.data?.message || error?.message || error?.error);
 		}
@@ -58,8 +59,8 @@ const CreateUserScreen = () => {
 
 	const error = getAccessibleResourcesQuery.error || createUserResult.error;
 
-	if (!isLoading && createUserResult.data)
-		navigate(`/users/${createUserResult.data.userId}`);
+	// if (!isLoading && createUserResult.data)
+	// 	navigate(`/users/${createUserResult.data.userId}`);
 
 	if (isLoading) return <BlockingLoader />;
 

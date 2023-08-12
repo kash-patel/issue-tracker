@@ -153,6 +153,8 @@ const UpdateUserScreen = () => {
 				id: userId as string,
 				newUserRoles: userRoles,
 			}).unwrap();
+
+			navigate("/users");
 		} catch (error) {
 			console.log(error?.data?.message || error?.message || error?.error);
 		}
@@ -181,7 +183,7 @@ const UpdateUserScreen = () => {
 		getDepartmentsQuery.data &&
 		getRolesQuery.data;
 
-	if (!dataAvailable) return <BlockingLoader />;
+	if (isLoading || !dataAvailable) return <BlockingLoader />;
 
 	return (
 		<section>
@@ -200,7 +202,10 @@ const UpdateUserScreen = () => {
 				{Object.keys(roles).length <= 0 ? (
 					<p>There are currently no roles at Jurassic Park.</p>
 				) : (
-					<fieldset className="mb-8">
+					<fieldset
+						className="mb-8"
+						disabled={getAccessibleResourcesQuery.data[9].permissionId < 3}
+					>
 						{Object.keys(roles).map((did) => (
 							<fieldset key={did} className="mb-4">
 								<legend className="font-bold uppercase tracking-wide text-sm">
@@ -230,30 +235,34 @@ const UpdateUserScreen = () => {
 						))}
 					</fieldset>
 				)}
-				<fieldset className="my-2 flex flex-row justify-around gap-2">
-					<button
-						type="submit"
-						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
-					>
-						Update User Roles
-					</button>
-					<button
-						type="button"
-						onClick={() => navigate("/users")}
-						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
-					>
-						Cancel
-					</button>
-				</fieldset>
-				<fieldset className="my-2">
-					<button
-						type="button"
-						onClick={deleteUserHandler}
-						className="w-full bg-red-600 hover:bg-red-800 transition-all px-4 py-2 mx-auto text-white rounded-md"
-					>
-						Delete User
-					</button>
-				</fieldset>
+				{getAccessibleResourcesQuery.data[9].permissionId > 3 && (
+					<>
+						<fieldset className="my-2 flex flex-row justify-around gap-2">
+							<button
+								type="submit"
+								className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
+							>
+								Update User Roles
+							</button>
+							<button
+								type="button"
+								onClick={() => navigate("/users")}
+								className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
+							>
+								Cancel
+							</button>
+						</fieldset>
+						<fieldset className="my-2">
+							<button
+								type="button"
+								onClick={deleteUserHandler}
+								className="w-full bg-red-600 hover:bg-red-800 transition-all px-4 py-2 mx-auto text-white rounded-md"
+							>
+								Delete User
+							</button>
+						</fieldset>
+					</>
+				)}
 			</form>
 		</section>
 	);
