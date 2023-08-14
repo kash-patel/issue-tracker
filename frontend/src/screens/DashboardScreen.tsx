@@ -19,7 +19,7 @@ const DashboardScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	if (resources) console.log(resources);
+	// if (resources) console.log(resources);
 
 	return (
 		<section>
@@ -39,7 +39,6 @@ const DashboardScreen = () => {
 					<p className="mb-2">
 						Read-only resources are grey and writable resources are green.
 					</p>
-
 					<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{Object.keys(resources).map((resourceId: string) =>
 							resources[

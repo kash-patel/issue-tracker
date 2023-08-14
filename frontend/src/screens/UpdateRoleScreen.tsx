@@ -59,14 +59,14 @@ const UpdateRoleScreen = () => {
 			resourceName: "Departments",
 			permissionId: 1,
 		},
-		3: {
-			resourceName: "Issues",
-			permissionId: 1,
-		},
-		4: {
-			resourceName: "Locations",
-			permissionId: 1,
-		},
+		// 3: {
+		// 	resourceName: "Issues",
+		// 	permissionId: 1,
+		// },
+		// 4: {
+		// 	resourceName: "Locations",
+		// 	permissionId: 1,
+		// },
 		5: {
 			resourceName: "Resources",
 			permissionId: 1,
@@ -79,10 +79,10 @@ const UpdateRoleScreen = () => {
 			resourceName: "Species",
 			permissionId: 1,
 		},
-		8: {
-			resourceName: "Systems",
-			permissionId: 1,
-		},
+		// 8: {
+		// 	resourceName: "Systems",
+		// 	permissionId: 1,
+		// },
 		9: {
 			resourceName: "Users",
 			permissionId: 1,

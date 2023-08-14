@@ -18,18 +18,18 @@ const ResourceDisplayDetails: {
 		url: "/departments",
 		checkPermissions: 2,
 	},
-	3: {
-		visible: true,
-		displayName: "Issues",
-		url: "/issues",
-		checkPermissions: 3,
-	},
-	4: {
-		visible: false,
-		displayName: "Park Locations",
-		url: "/locations",
-		checkPermissions: 4,
-	},
+	// 3: {
+	// 	visible: true,
+	// 	displayName: "Issues",
+	// 	url: "/issues",
+	// 	checkPermissions: 3,
+	// },
+	// 4: {
+	// 	visible: false,
+	// 	displayName: "Park Locations",
+	// 	url: "/locations",
+	// 	checkPermissions: 4,
+	// },
 	5: {
 		visible: false,
 		displayName: "Resources",
@@ -48,12 +48,12 @@ const ResourceDisplayDetails: {
 		url: "/species",
 		checkPermissions: 7,
 	},
-	8: {
-		visible: true,
-		displayName: "Systems and Park Locations",
-		url: "/systems",
-		checkPermissions: 4,
-	},
+	// 8: {
+	// 	visible: true,
+	// 	displayName: "Systems and Park Locations",
+	// 	url: "/systems",
+	// 	checkPermissions: 4,
+	// },
 	9: {
 		visible: true,
 		displayName: "Users",
