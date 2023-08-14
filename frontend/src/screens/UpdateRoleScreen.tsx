@@ -34,7 +34,7 @@ const UpdateRoleScreen = () => {
 
 	if (
 		getAccessibleResourcesQuery.data &&
-		getAccessibleResourcesQuery.data[6] < 3
+		getAccessibleResourcesQuery.data[6].permissionId < 3
 	)
 		navigate("/login");
 

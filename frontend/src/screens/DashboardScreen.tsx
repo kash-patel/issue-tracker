@@ -19,6 +19,8 @@ const DashboardScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
+	if (resources) console.log(resources);
+
 	return (
 		<section>
 			{isLoading ? (
@@ -40,7 +42,9 @@ const DashboardScreen = () => {
 
 					<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{Object.keys(resources).map((resourceId: string) =>
-							ResourceDisplayDetails[parseInt(resourceId)].visible ? (
+							resources[
+								ResourceDisplayDetails[parseInt(resourceId)].checkPermissions
+							] && ResourceDisplayDetails[parseInt(resourceId)].visible ? (
 								<li key={resourceId}>
 									<Link to={ResourceDisplayDetails[parseInt(resourceId)].url}>
 										<div
