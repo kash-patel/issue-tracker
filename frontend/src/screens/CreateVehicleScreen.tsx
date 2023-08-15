@@ -5,6 +5,7 @@ import { useCreateVehicleMutation } from "../slices/vehiclesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateVehicleScreen = () => {
 	const navigate = useNavigate();
@@ -14,11 +15,6 @@ const CreateVehicleScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [
-		createVehicle,
-		{ isLoading: createVehicleLoading, error: createVehicleError },
-	] = useCreateVehicleMutation();
-
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
@@ -26,10 +22,12 @@ const CreateVehicleScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[10] < 3
+			getAccessibleResourcesQuery.data[10].permissionId < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
+
+	const [createVehicle, createVehicleResult] = useCreateVehicleMutation();
 
 	const [make, setMake] = useState("");
 	const [model, setModel] = useState("");
@@ -40,14 +38,21 @@ const CreateVehicleScreen = () => {
 		try {
 			await createVehicle({ make, model, licensePlate }).unwrap();
 			navigate("/vehicles");
-		} catch (err: any) {
-			console.log(err?.data?.message || err?.message || err?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
+	const isLoading =
+		getAccessibleResourcesQuery.isLoading || createVehicleResult.isLoading;
+	const hasData: boolean = getAccessibleResourcesQuery.data;
+	const error = getAccessibleResourcesQuery.error || createVehicleResult.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
 	return (
 		<section>
-			{createVehicleLoading && <BlockingLoader />}
 			<Link to={"/vehicles"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all vehicles</p>
 			</Link>
@@ -84,13 +89,7 @@ const CreateVehicleScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{createVehicleError && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{createVehicleError.error?.data?.message ||
-								createVehicleError.error?.message ||
-								createVehicleError.error}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"

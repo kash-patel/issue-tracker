@@ -5,6 +5,7 @@ import { useCreateSpeciesMutation } from "../slices/speciesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateSpeciesScreen = () => {
 	const navigate = useNavigate();
@@ -14,11 +15,6 @@ const CreateSpeciesScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [
-		createSpecies,
-		{ isLoading: createSpeciesLoading, error: createSpeciesError },
-	] = useCreateSpeciesMutation();
-
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
@@ -26,10 +22,12 @@ const CreateSpeciesScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[7] < 3
+			getAccessibleResourcesQuery.data[7].permisionId < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
+
+	const [createSpecies, createSpeciesResult] = useCreateSpeciesMutation();
 
 	const [genusName, setGenusName] = useState("");
 	const [speciesName, setSpeciesName] = useState("");
@@ -39,14 +37,21 @@ const CreateSpeciesScreen = () => {
 		try {
 			await createSpecies({ genus: genusName, species: speciesName }).unwrap();
 			navigate("/species");
-		} catch (err: any) {
-			console.log(err?.data?.message || err?.message || err?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
+	const isLoading =
+		getAccessibleResourcesQuery.isLoading || createSpeciesResult.isLoading;
+	const hasData: boolean = getAccessibleResourcesQuery.data;
+	const error = getAccessibleResourcesQuery.error || createSpeciesResult.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
 	return (
 		<section>
-			{createSpeciesLoading && <BlockingLoader />}
 			<Link to={"/species"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all species</p>
 			</Link>
@@ -73,13 +78,7 @@ const CreateSpeciesScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{createSpeciesError && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{createSpeciesError.error?.data?.message ||
-								createSpeciesError.error?.message ||
-								createSpeciesError.error}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"

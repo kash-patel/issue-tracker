@@ -5,6 +5,7 @@ import { useCreateRoleMutation } from "../slices/rolesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateRoleScreen = () => {
 	const navigate = useNavigate();
@@ -15,18 +16,19 @@ const CreateRoleScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [createRole, { isLoading: createRoleLoading, error: createRoleError }] =
-		useCreateRoleMutation();
+	const [createRole, createRoleResult] = useCreateRoleMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
 
-	if (
-		getAccessibleResourcesQuery.data &&
-		getAccessibleResourcesQuery.data[6] < 3
-	)
-		navigate("/login");
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[6].permissionId < 3
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
 	const [name, setName] = useState("New Role");
 
@@ -109,16 +111,18 @@ const CreateRoleScreen = () => {
 			}).unwrap();
 
 			navigate(`/departments/${departmentId as string}`);
-		} catch (error) {
-			console.log(error?.data?.message || error?.message || error?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
-	const isLoading = getAccessibleResourcesQuery.isLoading || createRoleLoading;
-
-	const error = getAccessibleResourcesQuery.error || createRoleError;
+	const isLoading =
+		getAccessibleResourcesQuery.isLoading || createRoleResult.isLoading;
+	const hasData: boolean = getAccessibleResourcesQuery.data;
+	const error = getAccessibleResourcesQuery.error || createRoleResult.error;
 
 	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
@@ -146,15 +150,7 @@ const CreateRoleScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{error && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{"status" in error
-								? "error" in error
-									? error?.error
-									: error?.data?.message
-								: error.message}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 				</fieldset>
 				<fieldset
 					disabled={getAccessibleResourcesQuery.data[6].permissionId < 3}

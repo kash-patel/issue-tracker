@@ -5,6 +5,7 @@ import { useCreateUserMutation } from "../slices/usersApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateUserScreen = () => {
 	const navigate = useNavigate();
@@ -14,18 +15,19 @@ const CreateUserScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [createUser, createUserResult] = useCreateUserMutation();
-
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
 
-	if (
-		getAccessibleResourcesQuery.data &&
-		getAccessibleResourcesQuery.data[9] < 3
-	)
-		navigate("/login");
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[9].permissionId < 3
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
+	const [createUser, createUserResult] = useCreateUserMutation();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [firstName, setFirstName] = useState("");
@@ -49,20 +51,18 @@ const CreateUserScreen = () => {
 
 			await createUser(userInfo).unwrap();
 			navigate(`/users/${createUserResult.data.userId}`);
-		} catch (error) {
-			console.log(error?.data?.message || error?.message || error?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
 	const isLoading =
 		getAccessibleResourcesQuery.isLoading || createUserResult.isLoading;
-
+	const hasData: boolean = getAccessibleResourcesQuery.data;
 	const error = getAccessibleResourcesQuery.error || createUserResult.error;
 
-	// if (!isLoading && createUserResult.data)
-	// 	navigate(`/users/${createUserResult.data.userId}`);
-
 	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
@@ -119,15 +119,7 @@ const CreateUserScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{error && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{"status" in error
-								? "error" in error
-									? error?.error
-									: error?.data?.message
-								: error.message}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 				</fieldset>
 				<fieldset className="flex flex-row justify-around">
 					<button

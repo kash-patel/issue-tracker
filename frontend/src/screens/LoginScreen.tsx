@@ -5,16 +5,17 @@ import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { Link } from "react-router-dom";
 import BlockingLoader from "../components/BlockingLoader";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const LoginScreen = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const { userDetails } = useSelector((state: any) => state.auth);
+
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const navigate = useNavigate();
-	const dispatch = useDispatch();
-
-	const [login, { isLoading, error, isSuccess }] = useLoginMutation();
-	const { userDetails } = useSelector((state: any) => state.auth);
+	const [login, loginResult] = useLoginMutation();
 
 	useEffect(() => {
 		if (userDetails) navigate("/");
@@ -26,10 +27,17 @@ const LoginScreen = () => {
 			const res = await login({ username, password }).unwrap();
 			dispatch(setCredentials({ ...res }));
 			navigate("/");
-		} catch (err: any) {
-			console.log(err?.data?.message || err);
+		} catch (err) {
+			console.log(err);
 		}
 	};
+
+	const isLoading = loginResult.isLoading;
+	const hasData = true;
+	const error = loginResult.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section className="mx-auto max-w-xl">
@@ -64,26 +72,7 @@ const LoginScreen = () => {
 					</button>
 				</fieldset>
 			</form>
-			{error && (
-				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{"status" in error
-						? "error" in error
-							? error?.error
-							: error?.data?.message
-						: error.message}
-				</p>
-			)}
-			{isSuccess && (
-				<p className="px-4 py-2 mb-2 bg-green-600 text-white rounded-md">
-					Success!
-				</p>
-			)}
-			{isLoading && <BlockingLoader />}
-			{/* {isLoading && (
-				<p className="px-4 py-2 mb-2 bg-amber-50 border border-amber-500 text-amber-600 rounded-md">
-					Loading...
-				</p>
-			)} */}
+			{error && <LocalErrorDisplay error={error} />}
 			<p className="py-2">
 				If you are an employee and don&rsquo;t have an account or are having
 				trouble signing in, contact the system administrator, Mr. John Arnold.

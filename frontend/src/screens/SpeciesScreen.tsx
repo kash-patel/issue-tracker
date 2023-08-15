@@ -5,6 +5,7 @@ import { useGetSpeciesQuery } from "../slices/speciesApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const SpeciesScreen = () => {
 	const navigate = useNavigate();
@@ -14,7 +15,6 @@ const SpeciesScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const getSpeciesQuery = useGetSpeciesQuery(null);
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
@@ -22,10 +22,21 @@ const SpeciesScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[7] < 2
+			getAccessibleResourcesQuery.data[7].permissionId < 2
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
+
+	const getSpeciesQuery = useGetSpeciesQuery(null);
+
+	const isLoading =
+		getAccessibleResourcesQuery.isLoading || getSpeciesQuery.isLoading;
+	const hasData: boolean =
+		getAccessibleResourcesQuery.data || getSpeciesQuery.data;
+	const error = getAccessibleResourcesQuery.error || getSpeciesQuery.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
@@ -39,59 +50,40 @@ const SpeciesScreen = () => {
 				questions or concerns, please do <em>not</em> contact Chief Geneticist
 				Dr. Henry Wu directly.
 			</p>
-			{getSpeciesQuery.error ? (
-				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{getSpeciesQuery.error?.data?.message ||
-						getSpeciesQuery.error?.message ||
-						getSpeciesQuery.error}
-				</p>
-			) : (
-				getAccessibleResourcesQuery.error && (
-					<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-						{getAccessibleResourcesQuery.error?.data?.message ||
-							getAccessibleResourcesQuery.error?.message ||
-							getAccessibleResourcesQuery.error}
-					</p>
-				)
-			)}
-
-			{getSpeciesQuery.isLoading || getAccessibleResourcesQuery.isLoading ? (
-				<BlockingLoader />
-			) : (
-				<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-					{Object.keys(getSpeciesQuery.data).map((sid: string) => (
-						<li key={sid}>
-							<Link to={`/species/${sid}`}>
-								<div
-									className={
-										"p-4 flex flex-row justify-between items-center bg-emerald-600 hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
-									}
-								>
-									<p className="uppercase tracking-widest inline">
-										{getSpeciesQuery.data[sid].genusName}&nbsp;
-										{getSpeciesQuery.data[sid].speciesName}
-									</p>
-								</div>
-							</Link>
-						</li>
-					))}
-					{getAccessibleResourcesQuery.data[7].permissionId >= 3 && (
-						<li key={"new"}>
-							<Link to={"/species/new"}>
-								<div
-									className={
-										"p-4 flex flex-row justify-between items-center bg-zinc-800 hover:bg-emerald-600 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
-									}
-								>
-									<p className="uppercase tracking-widest inline">
-										Add New Species
-									</p>
-								</div>
-							</Link>
-						</li>
-					)}
-				</ul>
-			)}
+			{error && <LocalErrorDisplay error={error} />}
+			<ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+				{Object.keys(getSpeciesQuery.data).map((sid: string) => (
+					<li key={sid}>
+						<Link to={`/species/${sid}`}>
+							<div
+								className={
+									"p-4 flex flex-row justify-between items-center bg-emerald-600 hover:bg-zinc-800 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
+								}
+							>
+								<p className="uppercase tracking-widest inline">
+									{getSpeciesQuery.data[sid].genusName}&nbsp;
+									{getSpeciesQuery.data[sid].speciesName}
+								</p>
+							</div>
+						</Link>
+					</li>
+				))}
+				{getAccessibleResourcesQuery.data[7].permissionId >= 3 && (
+					<li key={"new"}>
+						<Link to={"/species/new"}>
+							<div
+								className={
+									"p-4 flex flex-row justify-between items-center bg-zinc-800 hover:bg-emerald-600 text-white font-bold drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
+								}
+							>
+								<p className="uppercase tracking-widest inline">
+									Add New Species
+								</p>
+							</div>
+						</Link>
+					</li>
+				)}
+			</ul>
 		</section>
 	);
 };

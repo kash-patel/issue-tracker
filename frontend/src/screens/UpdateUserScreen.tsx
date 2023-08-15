@@ -12,8 +12,10 @@ import {
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const UpdateUserScreen = () => {
+	const { userId } = useParams();
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
 
@@ -25,15 +27,16 @@ const UpdateUserScreen = () => {
 		userDetails ? userDetails.userId : skipToken
 	);
 
-	if (
-		getAccessibleResourcesQuery.data &&
-		getAccessibleResourcesQuery.data[9] < 3
-	)
-		navigate("/login");
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[9].permissionId < 3
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
 	const getDepartmentsQuery = useGetDepartmentsQuery(null);
 	const getRolesQuery = useGetRolesQuery(null);
-	const { userId } = useParams();
 	const getUserByIdQuery = useGetUserByIdQuery(userId as string);
 	const getUserRolesQuery = useGetUserRolesQuery(userId as string);
 	const [updateUserRoles, updateUserRolesResult] = useUpdateUserRolesMutation();
@@ -53,17 +56,8 @@ const UpdateUserScreen = () => {
 	const [didFetchRoles, setDidFetchRoles] = useState(false);
 	const [didFetchUserRoles, setDidFetchUserRoles] = useState(false);
 
-	// const initialroles: {
-	// 	[departmentId: number]: {
-	// 		departmentName: string;
-	// 		roles: {
-	// 			[roleId: number]: string;
-	// 		};
-	// 	};
-	// } = {};
-
 	if (!didFetchRoles && getRolesQuery.data && getDepartmentsQuery.data) {
-		setRoles((prevRoles) => {
+		setRoles((prevRoles: any) => {
 			const newRoles: {
 				[departmentId: number]: {
 					departmentName: string;
@@ -114,20 +108,6 @@ const UpdateUserScreen = () => {
 		setDidFetchUserRoles(true);
 	}
 
-	const addRoleId = (roleId: number) => {
-		const newRoleIds = [...userRoles];
-		const index: number = newRoleIds.findIndex((e) => e == roleId);
-		if (index <= -1) newRoleIds.push(roleId);
-		setUserRoles(newRoleIds);
-	};
-
-	const removeRoleId = (roleId: number) => {
-		const newRoleIds = [...userRoles];
-		const index: number = newRoleIds.findIndex((e) => e == roleId);
-		if (index > -1) newRoleIds.splice(index, 1);
-		setUserRoles(newRoleIds);
-	};
-
 	const toggleRoleId = (roleId: number) => {
 		const newRoleIds = [...userRoles];
 		const index: number = newRoleIds.findIndex((value) => value == roleId);
@@ -140,8 +120,8 @@ const UpdateUserScreen = () => {
 		try {
 			await deleteUser(parseInt(userId as string));
 			navigate("/users");
-		} catch (error) {
-			console.log(error?.data?.message || error?.message || error?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
@@ -155,8 +135,8 @@ const UpdateUserScreen = () => {
 			}).unwrap();
 
 			navigate("/users");
-		} catch (error) {
-			console.log(error?.data?.message || error?.message || error?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
@@ -166,7 +146,15 @@ const UpdateUserScreen = () => {
 		getUserRolesQuery.isLoading ||
 		getRolesQuery.isLoading ||
 		getDepartmentsQuery.isLoading ||
-		updateUserRolesResult.isLoading;
+		updateUserRolesResult.isLoading ||
+		deleteUserResult.isLoading;
+
+	const hasData: boolean =
+		getAccessibleResourcesQuery.data &&
+		getUserByIdQuery.data &&
+		getUserRolesQuery.data &&
+		getDepartmentsQuery.data &&
+		getRolesQuery.data;
 
 	const error =
 		getAccessibleResourcesQuery.error ||
@@ -174,16 +162,11 @@ const UpdateUserScreen = () => {
 		getUserRolesQuery.error ||
 		getRolesQuery.error ||
 		getDepartmentsQuery.error ||
-		updateUserRolesResult.error;
+		updateUserRolesResult.error ||
+		deleteUserResult.error;
 
-	const dataAvailable =
-		getAccessibleResourcesQuery.data &&
-		getUserByIdQuery.data &&
-		getUserRolesQuery.data &&
-		getDepartmentsQuery.data &&
-		getRolesQuery.data;
-
-	if (isLoading || !dataAvailable) return <BlockingLoader />;
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
@@ -235,6 +218,7 @@ const UpdateUserScreen = () => {
 						))}
 					</fieldset>
 				)}
+				{error && <LocalErrorDisplay error={error} />}
 				{getAccessibleResourcesQuery.data[9].permissionId > 3 && (
 					<>
 						<fieldset className="my-2 flex flex-row justify-around gap-2">

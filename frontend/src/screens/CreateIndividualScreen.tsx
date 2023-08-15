@@ -5,6 +5,7 @@ import { useCreateIndividualMutation } from "../slices/individualsApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateIndividualScreen = () => {
 	const navigate = useNavigate();
@@ -15,11 +16,6 @@ const CreateIndividualScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [
-		createIndividual,
-		{ isLoading: createIndividualLoading, error: createIndividualError },
-	] = useCreateIndividualMutation();
-
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
@@ -27,10 +23,13 @@ const CreateIndividualScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[1] < 3
+			getAccessibleResourcesQuery.data[1].permissionId < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
+
+	const [createIndividual, createIndividualResult] =
+		useCreateIndividualMutation();
 
 	const [name, setName] = useState("");
 
@@ -42,15 +41,26 @@ const CreateIndividualScreen = () => {
 				speciesId,
 			}).unwrap();
 			navigate(`/species/${speciesId}`);
-		} catch (err: any) {
-			console.log(err?.data?.message || err?.message || err?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
+	const isLoading =
+		getAccessibleResourcesQuery.isLoading || createIndividualResult.isLoading;
+	const hasData: boolean = getAccessibleResourcesQuery.data;
+	const error =
+		getAccessibleResourcesQuery.error || createIndividualResult.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
 	return (
 		<section>
-			{createIndividualLoading && <BlockingLoader />}
-			<Link to={`/species/${speciesId}`} className="inline-block mt-8">
+			<Link
+				to={`/species/${speciesId as string}`}
+				className="inline-block mt-8"
+			>
 				<p className="text-emerald-600">&larr; Back to species page</p>
 			</Link>
 			<h1 className="mb-8">Add Individual</h1>
@@ -66,13 +76,7 @@ const CreateIndividualScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{createIndividualError && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{createIndividualError.error?.data?.message ||
-								createIndividualError.error?.message ||
-								createIndividualError.error}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"

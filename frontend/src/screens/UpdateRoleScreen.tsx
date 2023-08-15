@@ -9,41 +9,43 @@ import {
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const UpdateRoleScreen = () => {
+	const { roleId } = useParams();
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
-	const { roleId } = useParams();
 
 	useEffect(() => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const getRoleByIdQuery = useGetRoleByIdQuery(roleId as string);
+	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
+		userDetails ? userDetails.userId : skipToken
+	);
+
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[6].permissionId < 3
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
 	const getRoleResourcePermissionsQuery = useGetRoleResourcePermissionsQuery(
 		roleId as string
 	);
 
-	const [updateRole, { isLoading: updateRoleLoading, error: updateRoleError }] =
-		useUpdateRoleMutation();
-
-	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
-		userDetails ? userDetails.userId : skipToken
-	);
-
-	if (
-		getAccessibleResourcesQuery.data &&
-		getAccessibleResourcesQuery.data[6].permissionId < 3
-	)
-		navigate("/login");
-
-	const [name, setName] = useState("");
+	const getRoleByIdQuery = useGetRoleByIdQuery(roleId as string);
 
 	useEffect(() => {
 		if (getRoleByIdQuery.data && name == "")
 			setName(getRoleByIdQuery.data[roleId as string].name);
 	});
+
+	const [updateRole, updateRoleResult] = useUpdateRoleMutation();
+
+	const [name, setName] = useState("");
 
 	const initialRoleResourcePermissions: {
 		[resourceId: number]: {
@@ -157,8 +159,8 @@ const UpdateRoleScreen = () => {
 					getRoleByIdQuery.data[parseInt(roleId as string)].departmentId
 				}`
 			);
-		} catch (error) {
-			console.log(error?.data?.message || error?.message || error?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
@@ -166,21 +168,26 @@ const UpdateRoleScreen = () => {
 		getAccessibleResourcesQuery.isLoading ||
 		getRoleByIdQuery.isLoading ||
 		getRoleResourcePermissionsQuery.isLoading ||
-		updateRoleLoading;
+		updateRoleResult.isLoading;
+
+	const hasData: boolean =
+		getAccessibleResourcesQuery.data &&
+		getRoleByIdQuery.data &&
+		getRoleResourcePermissionsQuery.data;
 
 	const error =
 		getAccessibleResourcesQuery.error ||
 		getRoleByIdQuery.error ||
 		getRoleResourcePermissionsQuery.error ||
-		updateRoleError;
+		updateRoleResult.error;
 
 	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
 			<Link
 				to={`/departments/${
-					getRoleByIdQuery.data &&
 					getRoleByIdQuery.data[roleId as string].departmentId
 				}`}
 				className="inline-block mt-8"
@@ -205,15 +212,7 @@ const UpdateRoleScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{error && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{"status" in error
-								? "error" in error
-									? error?.error
-									: error?.data?.message
-								: error.message}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 				</fieldset>
 				<fieldset
 					disabled={getAccessibleResourcesQuery.data[6].permissionId < 3}

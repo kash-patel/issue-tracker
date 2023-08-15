@@ -5,6 +5,7 @@ import { useGetDepartmentsQuery } from "../slices/departmentsApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const DepartmentsScreen = () => {
 	const navigate = useNavigate();
@@ -14,24 +15,28 @@ const DepartmentsScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const getDepartmentsQuery = useGetDepartmentsQuery(null);
+	useEffect(() => {
+		if (
+			getAccessibleResourcesQuery.data &&
+			getAccessibleResourcesQuery.data[2].permissionId < 2
+		)
+			navigate("/login");
+	}, [navigate, userDetails]);
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
 
-	useEffect(() => {
-		if (
-			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[2] < 2
-		)
-			navigate("/login");
-	}, [navigate, userDetails]);
-
-	const error = getAccessibleResourcesQuery.error || getDepartmentsQuery.error;
+	const getDepartmentsQuery = useGetDepartmentsQuery(null);
 
 	const isLoading =
 		getDepartmentsQuery.isLoading || getAccessibleResourcesQuery.isLoading;
+	const hasData: boolean =
+		getDepartmentsQuery.data || getAccessibleResourcesQuery.data;
+	const error = getAccessibleResourcesQuery.error || getDepartmentsQuery.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
 
 	return (
 		<section>
@@ -42,11 +47,7 @@ const DepartmentsScreen = () => {
 			<p className="mb-2">
 				Here at Jurassic Park, every department is valued and needed.
 			</p>
-			{error && (
-				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{error?.data?.message || error?.message || error}
-				</p>
-			)}
+			{error && <LocalErrorDisplay error={error} />}
 
 			{isLoading ? (
 				<BlockingLoader />

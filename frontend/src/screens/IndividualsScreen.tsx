@@ -11,32 +11,16 @@ import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
 import BlockingLoader from "../components/BlockingLoader";
 import { FaTrash } from "react-icons/fa6";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const IndividualsScreen = () => {
+	const { speciesId } = useParams();
 	const navigate = useNavigate();
 	const { userDetails } = useSelector((state: any) => state.auth);
 
 	useEffect(() => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
-
-	const { speciesId } = useParams();
-
-	const getIndividualsQuery = useGetSpeciesIndividualsQuery(
-		parseInt(speciesId!)
-	);
-
-	const getSpeciesByIdQuery = useGetSpeciesByIdQuery(speciesId as string);
-
-	const [
-		deleteIndividual,
-		{ isLoading: isLoadingDeleteIndividuals, error: deleteIndividualError },
-	] = useDeleteIndividualMutation();
-
-	const [
-		deleteSpecies,
-		{ isLoading: isLoadingDeleteSpecies, error: deleteSpeciesError },
-	] = useDeleteSpeciesMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -45,28 +29,26 @@ const IndividualsScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[1] < 2
+			getAccessibleResourcesQuery.data[1].permissionId < 2
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
 
-	const error =
-		getSpeciesByIdQuery.error ||
-		getIndividualsQuery.error ||
-		getAccessibleResourcesQuery.error ||
-		deleteIndividualError ||
-		deleteSpeciesError;
+	const getIndividualsQuery = useGetSpeciesIndividualsQuery(
+		parseInt(speciesId!)
+	);
 
-	const loading: boolean =
-		getSpeciesByIdQuery.isLoading ||
-		getIndividualsQuery.isLoading ||
-		getAccessibleResourcesQuery.isLoading ||
-		isLoadingDeleteIndividuals ||
-		isLoadingDeleteSpecies;
+	const getSpeciesByIdQuery = useGetSpeciesByIdQuery(speciesId as string);
+
+	const [deleteIndividual, deleteIndividualResult] =
+		useDeleteIndividualMutation();
+
+	const [deleteSpecies, deleteSpeciesResult] = useDeleteSpeciesMutation();
 
 	const handleDeleteSpecies = async () => {
 		try {
 			await deleteSpecies(speciesId as string).unwrap();
+			navigate("/species");
 		} catch (error) {
 			throw error;
 		}
@@ -79,9 +61,29 @@ const IndividualsScreen = () => {
 		}
 	};
 
-	return loading ? (
-		<BlockingLoader />
-	) : (
+	const isLoading =
+		getSpeciesByIdQuery.isLoading ||
+		getIndividualsQuery.isLoading ||
+		getAccessibleResourcesQuery.isLoading ||
+		deleteIndividualResult.isLoading ||
+		deleteSpeciesResult.isLoading;
+
+	const hasData: boolean =
+		getSpeciesByIdQuery.data &&
+		getIndividualsQuery.data &&
+		getAccessibleResourcesQuery.data;
+
+	const error =
+		getSpeciesByIdQuery.error ||
+		getIndividualsQuery.error ||
+		getAccessibleResourcesQuery.error ||
+		deleteIndividualResult.error ||
+		deleteSpeciesResult.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
+	return (
 		<section>
 			<Link to={"/species"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all species</p>
@@ -97,11 +99,7 @@ const IndividualsScreen = () => {
 				Dr. Henry Wu directly.
 			</p>
 
-			{error && (
-				<p className="px-4 py-2 mb-2 bg-red-800 text-white rounded-md">
-					{error?.data?.message || error?.message || error?.error || error}
-				</p>
-			)}
+			{error && <LocalErrorDisplay error={error} />}
 			<div className="flex flex-col justify-start items-center">
 				{getAccessibleResourcesQuery.data[1].permissionId >= 3 && (
 					<Link
@@ -116,7 +114,7 @@ const IndividualsScreen = () => {
 				{Object.keys(getIndividualsQuery.data).length <= 0 &&
 				getAccessibleResourcesQuery.data[7].permissionId >= 3 ? (
 					<Link
-						to={"/species"}
+						to={"#"}
 						onClick={handleDeleteSpecies}
 						className="inline-block mt-4"
 					>

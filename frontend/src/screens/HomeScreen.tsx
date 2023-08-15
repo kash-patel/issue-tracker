@@ -10,6 +10,7 @@ import {
 import { UserProfiles } from "../data/userProfiles";
 import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 function getRolesString(roles: string[]): string {
 	let rolesString: string = "";
@@ -29,21 +30,22 @@ function getRolesString(roles: string[]): string {
 const HomeScreen = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const [login, { isLoading, error }] = useLoginMutation();
-	const [logout, { isLoading: logoutLoading, error: logoutError }] =
-		useLogoutMutation();
+
 	const { userDetails } = useSelector((state: any) => state.auth);
 	const userRolesQuery = useGetUserRolesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);
+
+	const [login, loginResult] = useLoginMutation();
+	const [logout, logoutResult] = useLogoutMutation();
 
 	async function handleProfileClick(username: string, password: string) {
 		try {
 			const res = await login({ username, password }).unwrap();
 			dispatch(setCredentials({ ...res }));
 			navigate("/");
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			console.log(error);
 		}
 	}
 
@@ -57,72 +59,51 @@ const HomeScreen = () => {
 		}
 	}
 
+	const isLoading =
+		loginResult.isLoading || logoutResult.isLoading || userRolesQuery.isLoading;
+	const hasData: boolean = userRolesQuery.isLoading;
+	const error = loginResult.error || logoutResult.error || userRolesQuery.error;
+
+	if (isLoading) return <BlockingLoader />;
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
 	return (
 		<section>
-			{(isLoading || logoutLoading) && <BlockingLoader />}
-			{/* {isLoading && (
-				<p className="px-4 py-2 mb-2 bg-amber-50 border border-amber-500 text-amber-600 rounded-md">
-					Loading...
-				</p>
-			)} */}
-			{error && (
-				<p className="px-4 py-2 mb-2 bg-red-50 border border-red-500 text-red-600 rounded-md">
-					{"status" in error
-						? "error" in error
-							? error?.error
-							: error?.data?.message
-						: error.message}
-				</p>
-			)}
-			{logoutError && (
-				<p className="px-4 py-2 mb-2 bg-red-50 border border-red-500 text-red-600 rounded-md">
-					{"status" in logoutError
-						? "error" in logoutError
-							? logoutError?.error
-							: logoutError?.data?.message
-						: logoutError.message}
-				</p>
-			)}
+			{error && <LocalErrorDisplay error={error} />}
 			{userDetails ? (
 				<>
 					<h1 className="my-8 text-center">
 						Welcome, {userDetails.firstName}.
 					</h1>
-					{userRolesQuery.isLoading ? (
-						<BlockingLoader />
-					) : userRolesQuery.error ? (
-						<p>{error?.data?.message || error?.message}</p>
-					) : (
-						<div className="my-8">
-							<h2>Your Roles</h2>
-							{Object.keys(userRolesQuery.data).length <= 0 ? (
-								<p className="my-1">
-									You currently have no roles at Jurassic Park.
-								</p>
-							) : (
-								<ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-									{Object.keys(userRolesQuery.data).map((departmentId) => (
-										<li key={departmentId}>
-											<p className="uppercase font-bold tracking-wide text-sm bg-zinc-200 px-2 py-1 mt-2 rounded-md inline-block">
-												{userRolesQuery.data[departmentId].departmentName}
-											</p>
-											<ul>
-												{Object.keys(
-													userRolesQuery.data[departmentId].roles
-												).map((roleId) => (
+					<div className="my-8">
+						<h2>Your Roles</h2>
+						{Object.keys(userRolesQuery.data).length <= 0 ? (
+							<p className="my-1">
+								You currently have no roles at Jurassic Park.
+							</p>
+						) : (
+							<ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+								{Object.keys(userRolesQuery.data).map((departmentId) => (
+									<li key={departmentId}>
+										<p className="uppercase font-bold tracking-wide text-sm bg-zinc-200 px-2 py-1 mt-2 rounded-md inline-block">
+											{userRolesQuery.data[departmentId].departmentName}
+										</p>
+										<ul>
+											{Object.keys(userRolesQuery.data[departmentId].roles).map(
+												(roleId) => (
 													<li key={roleId}>
 														<p className="uppercase tracking-wide text-sm ml-4 my-1">
 															{userRolesQuery.data[departmentId].roles[roleId]}
 														</p>
 													</li>
-												))}
-											</ul>
-										</li>
-									))}
-								</ul>
-							)}
-						</div>
-					)}
+												)
+											)}
+										</ul>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
 					<div className="max-w-sm mx-auto my-8 flex flex-col justify-around items-center gap-4">
 						<Link to={"/dashboard"}>
 							<p className="uppercase font-bold tracking-widest bg-zinc-800 hover:bg-emerald-600 transition-all p-4 rounded-md text-white flex flex-row justify-between items-center">

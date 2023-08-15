@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, FormEvent, useState } from "react";
 import { useCreateDepartmentMutation } from "../slices/departmentsApiSlice";
 import { useGetAccessibleResourcesQuery } from "../slices/usersApiSlice";
-import BlockingLoader from "../components/BlockingLoader";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import BlockingLoader from "../components/BlockingLoader";
+import LocalErrorDisplay from "../components/LocalErrorDisplay";
 
 const CreateDepartmentScreen = () => {
 	const navigate = useNavigate();
@@ -14,10 +15,8 @@ const CreateDepartmentScreen = () => {
 		if (!userDetails) navigate("/login");
 	}, [navigate, userDetails]);
 
-	const [
-		createDepartment,
-		{ isLoading: createDepartmentLoading, error: createDepartmentError },
-	] = useCreateDepartmentMutation();
+	const [createDepartment, createDepartmentResult] =
+		useCreateDepartmentMutation();
 
 	const getAccessibleResourcesQuery = useGetAccessibleResourcesQuery(
 		userDetails ? userDetails.userId : skipToken
@@ -26,7 +25,7 @@ const CreateDepartmentScreen = () => {
 	useEffect(() => {
 		if (
 			getAccessibleResourcesQuery.data &&
-			getAccessibleResourcesQuery.data[2] < 3
+			getAccessibleResourcesQuery.data[2].permissionId < 3
 		)
 			navigate("/login");
 	}, [navigate, userDetails]);
@@ -40,14 +39,23 @@ const CreateDepartmentScreen = () => {
 				name: name,
 			}).unwrap();
 			navigate("/departments");
-		} catch (err: any) {
-			console.log(err?.data?.message || err?.message || err?.error);
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
+	const isLoading =
+		createDepartmentResult.isLoading || getAccessibleResourcesQuery.isLoading;
+	const hasData: boolean = getAccessibleResourcesQuery.data;
+	const error =
+		createDepartmentResult.error || getAccessibleResourcesQuery.error;
+
+	if (isLoading) return <BlockingLoader />;
+
+	if (!hasData) return <BlockingLoader statusCode={1} />;
+
 	return (
 		<section>
-			{createDepartmentLoading && <BlockingLoader />}
 			<Link to={"/departments"} className="inline-block mt-8">
 				<p className="text-emerald-600">&larr; Back to all departments</p>
 			</Link>
@@ -64,15 +72,7 @@ const CreateDepartmentScreen = () => {
 							className="w-full"
 						/>
 					</label>
-					{createDepartmentError && (
-						<p className="px-4 py-2 my-2 bg-red-800 text-white rounded-md">
-							{"status" in createDepartmentError
-								? "error" in createDepartmentError
-									? createDepartmentError?.error
-									: createDepartmentError?.data?.message
-								: createDepartmentError.message}
-						</p>
-					)}
+					{error && <LocalErrorDisplay error={error} />}
 					<button
 						type="submit"
 						className="bg-zinc-800 hover:bg-emerald-600 transition-all px-4 py-2 mx-auto text-white rounded-md"
