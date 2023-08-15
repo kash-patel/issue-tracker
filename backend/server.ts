@@ -21,7 +21,7 @@ const corsOpts: CorsOptions = {
 	origin: "https://parkman-frontend.onrender.com",
 	optionsSuccessStatus: 200,
 	credentials: true,
-	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
+	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
 	allowedHeaders: ["Content-Type", "Authorization"],
 	exposedHeaders: ["Content-Type", "Authorization"],
 };
