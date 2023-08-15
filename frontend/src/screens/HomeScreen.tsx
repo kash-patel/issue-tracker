@@ -32,7 +32,6 @@ const HomeScreen = () => {
 	const navigate = useNavigate();
 
 	const { userDetails } = useSelector((state: any) => state.auth);
-
 	const userRolesQuery = useGetUserRolesQuery(
 		userDetails ? userDetails.userId : skipToken
 	);

@@ -1,5 +1,5 @@
 const BASE_URL =
-	import.meta.env.ENV === "development"
+	import.meta.env.VITE_ENV === "development"
 		? "http://localhost:3000"
 		: import.meta.env.API_URL;
 const DEPARTMENTS_URL = BASE_URL + "/api/departments";
