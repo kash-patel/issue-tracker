@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { notFoundError, errorHandler } from "./src/middleware/errorHandler";
 import userRouter from "./src/routes/userRoutes";
 import departmentRouter from "./src/routes/departmentRoutes";
@@ -19,6 +20,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors());
 
 app.use("/api/users", userRouter);
 app.use("/api/departments", departmentRouter);
