@@ -61,7 +61,7 @@ const HomeScreen = () => {
 
 	const isLoading =
 		loginResult.isLoading || logoutResult.isLoading || userRolesQuery.isLoading;
-	const hasData: boolean = userRolesQuery.isLoading;
+	const hasData: boolean = true;
 	const error = loginResult.error || logoutResult.error || userRolesQuery.error;
 
 	if (isLoading) return <BlockingLoader />;
