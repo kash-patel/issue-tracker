@@ -18,17 +18,18 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOpts: CorsOptions = {
-	origin: "*",
+	origin: "https://parkman-frontend.onrender.com",
+	optionsSuccessStatus: 200,
 	credentials: true,
 	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
 	allowedHeaders: ["Content-Type"],
 	exposedHeaders: ["Content-Type"],
 };
 
+app.use(cors(corsOpts));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors(corsOpts));
 
 app.use("/api/users", userRouter);
 app.use("/api/departments", departmentRouter);
