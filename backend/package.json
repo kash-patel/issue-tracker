@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kash-patel/issue-tracker.git"
+    "url": "git+https://github.com/kash-patel/parkman.git"
   },
   "author": "Kash Patel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kash-patel/issue-tracker/issues"
+    "url": "https://github.com/kash-patel/parkman/issues"
   },
-  "homepage": "https://github.com/kash-patel/issue-tracker#readme",
+  "homepage": "https://github.com/kash-patel/parkman#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
