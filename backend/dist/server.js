@@ -1,0 +1,38 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const express_1 = __importDefault(require("express"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const errorHandler_1 = require("./src/middleware/errorHandler");
+const userRoutes_1 = __importDefault(require("./src/routes/userRoutes"));
+const departmentRoutes_1 = __importDefault(require("./src/routes/departmentRoutes"));
+const roleRoutes_1 = __importDefault(require("./src/routes/roleRoutes"));
+const locationRoutes_1 = __importDefault(require("./src/routes/locationRoutes"));
+const systemRoutes_1 = __importDefault(require("./src/routes/systemRoutes"));
+const vehicleRoutes_1 = __importDefault(require("./src/routes/vehicleRoutes"));
+const speciesRoutes_1 = __importDefault(require("./src/routes/speciesRoutes"));
+const animalRoutes_1 = __importDefault(require("./src/routes/animalRoutes"));
+const roleResourcePermissionRoutes_1 = __importDefault(require("./src/routes/roleResourcePermissionRoutes"));
+const app = (0, express_1.default)();
+const port = process.env.PORT || 5000;
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
+app.use("/api/users", userRoutes_1.default);
+app.use("/api/departments", departmentRoutes_1.default);
+app.use("/api/roles", roleRoutes_1.default);
+app.use("/api/locations", locationRoutes_1.default);
+app.use("/api/systems", systemRoutes_1.default);
+app.use("/api/vehicles", vehicleRoutes_1.default);
+app.use("/api/species", speciesRoutes_1.default);
+app.use("/api/animals", animalRoutes_1.default);
+app.use("/api/roleResourcePermissions", roleResourcePermissionRoutes_1.default);
+app.use(errorHandler_1.notFoundError);
+app.use(errorHandler_1.errorHandler);
+app.listen(port, () => {
+    console.log(`Server.ts listening on port ${port}.`);
+});
