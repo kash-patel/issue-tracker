@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import { notFoundError, errorHandler } from "./src/middleware/errorHandler";
 import userRouter from "./src/routes/userRoutes";
 import departmentRouter from "./src/routes/departmentRoutes";
@@ -17,10 +17,14 @@ import roleResourcePermissionRouter from "./src/routes/roleResourcePermissionRou
 const app = express();
 const port = process.env.PORT || 5000;
 
+const corsOpts: CorsOptions = {
+	allowedHeaders: [origin],
+};
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOpts));
 
 app.use("/api/users", userRouter);
 app.use("/api/departments", departmentRouter);
