@@ -3,6 +3,7 @@ import Constants from "../constants";
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: Constants.BASE_URL,
+	credentials: "include",
 	prepareHeaders: (headers) => {
 		const token = localStorage.getItem("userDetails");
 		if (token) {
