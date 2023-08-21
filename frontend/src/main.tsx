@@ -28,6 +28,7 @@ import UsersScreen from "./screens/UsersScreen.tsx";
 import CreateUserScreen from "./screens/CreateUserScreen.tsx";
 import UpdateUserScreen from "./screens/UpdateUserScreen.tsx";
 import ErrorElement from "./components/ErrorElement.tsx";
+import AboutScreen from "./screens/AboutScreen.tsx";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -55,6 +56,7 @@ const router = createBrowserRouter(
 			<Route path="/users" element={<UsersScreen />} />
 			<Route path="/users/new" element={<CreateUserScreen />} />
 			<Route path="/users/:userId" element={<UpdateUserScreen />} />
+			<Route path="/about" element={<AboutScreen />} />
 		</Route>
 	)
 );
