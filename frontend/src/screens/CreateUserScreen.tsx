@@ -50,7 +50,7 @@ const CreateUserScreen = () => {
 			};
 
 			await createUser(userInfo).unwrap();
-			navigate(`/users/${createUserResult.data.userId}`);
+			navigate("/users/");
 		} catch (err) {
 			console.log(err);
 		}
