@@ -1,2 +1,7 @@
-# issue-tracker
-Simple issue tracker app using a PostgreSQL database hosted on render.com
+# ParkMan
+
+Full stack resource management system that implements RBAC.
+
+Database: PostgreSQL
+Backend:  ExpressJs
+Frontend: React + Tailwind + Redux Toolkit
