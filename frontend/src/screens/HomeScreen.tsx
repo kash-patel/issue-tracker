@@ -154,25 +154,20 @@ const HomeScreen = () => {
 											<p className="text-md font-bold mb-2 uppercase tracking-widest">
 												{userProfile.display_name}
 											</p>
+											<p className="all-small-caps font-bold tracking-wide">
+												Roles:
+											</p>
 											<p className="all-small-caps">
-												<span className="font-bold tracking-wide">Roles:</span>
-												&nbsp;
 												{getRolesString(userProfile.roles)}
 											</p>
-											<p>
-												<span className="all-small-caps font-bold tracking-wide">
-													Username:
-												</span>
-												&nbsp;
-												<code>{userProfile.username}</code>
+											<p className="all-small-caps font-bold tracking-wide">
+												Username:
 											</p>
-											<p>
-												<span className="all-small-caps font-bold tracking-wide">
-													Password:
-												</span>
-												&nbsp;
-												<code>{userProfile.password}</code>
+											<code>{userProfile.username}</code>
+											<p className="all-small-caps font-bold tracking-wide">
+												Password:
 											</p>
+											<code>{userProfile.password}</code>
 										</div>
 									</Link>
 								</li>
