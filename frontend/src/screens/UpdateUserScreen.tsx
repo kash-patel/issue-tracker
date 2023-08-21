@@ -219,7 +219,7 @@ const UpdateUserScreen = () => {
 					</fieldset>
 				)}
 				{error && <LocalErrorDisplay error={error} />}
-				{getAccessibleResourcesQuery.data[9].permissionId > 3 && (
+				{getAccessibleResourcesQuery.data[9].permissionId >= 3 && (
 					<>
 						<fieldset className="my-2 flex flex-row justify-around gap-2">
 							<button
