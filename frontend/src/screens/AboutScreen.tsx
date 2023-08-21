@@ -40,8 +40,8 @@ const AboutScreen = () => {
 			<h3 className="my-4">User Security</h3>
 			<p className="mb-4">
 				Every time a user logs in, the backend verifies the correctness of the
-				credentials; if they are valid, a JSON Web Token (JWT) is generated and
-				stored in a secure HTTP-only cookie.
+				credentials by querying the database; if they are valid, a JSON Web
+				Token (JWT) is generated and stored in a secure HTTP-only cookie.
 			</p>
 			<p className="mb-4">
 				This JWT contains no sensitive user information, and a separate query is
