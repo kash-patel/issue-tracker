@@ -139,7 +139,7 @@ const HomeScreen = () => {
 							}) => (
 								<li
 									key={userProfile.id}
-									className="p-4 bg-white drop-shadow-md hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
+									className="p-4 text-white bg-emerald-600 drop-shadow-md hover:bg-zinc-800 hover:drop-shadow-xl transition-all rounded-md cursor-pointer select-none"
 								>
 									<Link
 										onClick={async () =>
