@@ -106,7 +106,7 @@ const HomeScreen = () => {
 					</div>
 					<div className="max-w-sm mx-auto my-8 flex flex-col justify-around items-center gap-4">
 						<Link to={"/dashboard"}>
-							<p className="uppercase font-bold tracking-widest bg-zinc-800 hover:bg-emerald-600 transition-all p-4 rounded-md text-white flex flex-row justify-between items-center">
+							<p className="uppercase font-bold tracking-widest bg-emerald-600 hover:bg-zinc-800 transition-all p-4 rounded-md text-white flex flex-row justify-between items-center">
 								Go to your dashboard
 							</p>
 						</Link>
