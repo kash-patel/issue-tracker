@@ -53,7 +53,7 @@ const AboutScreen = () => {
 			<p className="mb-4">
 				Jurassic Park has several resources: vehicles, departments, roles,
 				users, and most famously, dinosaurs. Obviously, only the most trusted
-				and qualified people should have access to modify such resource.
+				and qualified people should have access to modify such resources.
 			</p>
 			<p className="mb-4">
 				To that end, ParkMan implments resource-based access control (RBAC).
